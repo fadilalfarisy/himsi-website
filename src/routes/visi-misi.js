@@ -1,6 +1,6 @@
 import express from "express"
 import multer from "multer"
-import profileController from '../controller/profile-controller.js'
+import visiController from '../controller/visi-controller.js'
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -28,11 +28,12 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: filestorage, fileFilter: fileFilter })
 
-const router = express.Router()
+const visiMisi = express.Router()
 
-router.get('/images/:id', profileController.getImagesById)
-router.post('/images', upload.single('image'), profileController.uploadImages)
-router.put('/images/:id', upload.single('image'), profileController.editImages)
-router.delete('/images/:id', profileController.deleteImages)
+visiMisi.get('/visi', visiController.getVisi)
+visiMisi.get('/visi/:id', visiController.getVisiById)
+visiMisi.post('/visi', upload.single('image'), visiController.createVisi)
+visiMisi.put('/visi/:id', upload.single('image'), visiController.editVisi)
+visiMisi.delete('/visi/:id', visiController.deleteVisi)
 
-export default router
+export default visiMisi

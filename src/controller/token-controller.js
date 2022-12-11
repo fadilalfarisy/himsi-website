@@ -1,6 +1,6 @@
 import { createAccessToken, verifyRefreshToken } from '../libs/jwt.js';
 
-const checkToken = async (req, res, next) => {
+const checkRefreshToken = async (req, res, next) => {
     try {
         const { refreshToken } = req.cookies
         if (!refreshToken) {
@@ -37,7 +37,7 @@ const checkToken = async (req, res, next) => {
 }
 
 const tokenController = {
-    checkToken
+    checkRefreshToken
 }
 
 export default tokenController
