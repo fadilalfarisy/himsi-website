@@ -12,6 +12,7 @@ const checkRefreshToken = async (req, res, next) => {
         }
         verifyRefreshToken(refreshToken, (error, decoded) => {
             if (error) {
+                console.log(error)
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',
