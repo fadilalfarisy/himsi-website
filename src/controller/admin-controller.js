@@ -22,7 +22,6 @@ const register = async (req, res, next) => {
 
         //send cookie token
         res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
             expires: new Date(Date.now() + 1000 * 30) //30s
         });
 
@@ -72,7 +71,6 @@ const login = async (req, res) => {
 
         //send cookie token
         res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
             expires: new Date(Date.now() + 1000 * 30) //30s
         });
 
