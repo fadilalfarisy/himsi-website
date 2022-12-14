@@ -27,7 +27,7 @@ const app = express()
 app.use('/public', express.static(path.join(__dirname, '/public')))
 app.use(cors({
     credentials: true,
-    origin: "*"
+    origin: ['https://dashboard-himsi.netlify.app', 'https://web-himsi.netlify.app', 'http://localhost:3000']
 })) //enable cors 
 app.use(cookieParser()); //allow to access cookie
 app.use(bodyParser.urlencoded({ extended: false })) //allow request with format x-www-form-urlencoded
