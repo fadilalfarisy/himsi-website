@@ -7,6 +7,8 @@ import router from './src/routes/index.js'
 import config from './src/config/config.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import dotenv from 'dotenv'
+dotenv.config()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
