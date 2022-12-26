@@ -7,16 +7,14 @@ const getCollegeLink = async (req, res, next) => {
     if (req.query.category) {
       match.category = req.query.category;
     }
-    let response = await CollegeLink.aggregate([
-      { $match: match },
-    ]);
-    res.send(response);
-
-    // res.status(200).json({
-    //   status: 200,
-    //   message: "success",
-    //   data: collegeLink,
-    // }); 
+    let response = await CollegeLink.aggregate([{
+      $match: match
+    },])
+    res.status(200).json({
+      status: 200,
+      message: "success",
+      data: response,
+    })
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
@@ -28,9 +26,13 @@ const getCollegeLink = async (req, res, next) => {
 };
 
 const getCollegeLinkById = async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    id
+  } = req.params;
   try {
-    const collegeLink = await CollegeLink.findOne({ _id: id });
+    const collegeLink = await CollegeLink.findOne({
+      _id: id
+    });
     if (!collegeLink) {
       return res.status(400).json({
         status: 400,
@@ -54,7 +56,11 @@ const getCollegeLinkById = async (req, res, next) => {
 };
 
 const createCollegeLink = async (req, res, next) => {
-  const { name, url, category } = req.body;
+  const {
+    name,
+    url,
+    category
+  } = req.body;
   try {
     const newCollegeLink = await CollegeLink.create({
       name,
@@ -77,19 +83,24 @@ const createCollegeLink = async (req, res, next) => {
 };
 
 const editCollegeLink = async (req, res, next) => {
-  const { id } = req.params;
-  const { name, url, category } = req.body;
+  const {
+    id
+  } = req.params;
+  const {
+    name,
+    url,
+    category
+  } = req.body;
   try {
-    const updatedCollegeLink = await CollegeLink.updateOne(
-      { _id: id },
-      {
-        $set: {
-          name,
-          url,
-          category,
-        },
-      }
-    );
+    const updatedCollegeLink = await CollegeLink.updateOne({
+      _id: id
+    }, {
+      $set: {
+        name,
+        url,
+        category,
+      },
+    });
     res.status(200).json({
       status: 200,
       message: "success",
@@ -106,9 +117,13 @@ const editCollegeLink = async (req, res, next) => {
 };
 
 const deleteCollegeLink = async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    id
+  } = req.params;
   try {
-    const deletedCollegeLink = await CollegeLink.deleteOne({ _id: id });
+    const deletedCollegeLink = await CollegeLink.deleteOne({
+      _id: id
+    });
     if (deletedCollegeLink.deletedCount === 0) {
       return res.status(400).json({
         status: 400,

@@ -15,9 +15,17 @@ const register = async (req, res, next) => {
             });
         }
         //save new admin
-        const newAdmin = await Admin.create({ email, password });
+        let role = 'super admin'
+        const newAdmin = await Admin.create({
+            email,
+            password,
+            role
+        });
 
-        const accessToken = createAccessToken(newAdmin._id);
+        const accessToken = createAccessToken({
+            id: newAdmin._id,
+            role: role
+        });
         const refreshToken = createRefreshToken(newAdmin._id)
 
         //send cookie token
@@ -69,7 +77,15 @@ const login = async (req, res) => {
             });
         }
 
-        const accessToken = createAccessToken(admin._id);
+        let role = 'super admin'
+        if (admin.role) {
+            role = admin.role
+        }
+
+        const accessToken = createAccessToken({
+            id: admin._id,
+            role: role
+        });
         const refreshToken = createRefreshToken(admin._id);
 
         //send cookie token
@@ -98,7 +114,36 @@ const login = async (req, res) => {
     }
 };
 
-const listAdmin = async (req, res, next) => {
+const createAdmin = async (req, res, next) => {
+    const {
+        email,
+        password,
+        nama,
+        role
+    } = req.body
+    try {
+        const newAdmin = await Admin.create({
+            email,
+            password,
+            nama,
+            role
+        });
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: newAdmin
+        })
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
+const getAdmin = async (req, res, next) => {
     try {
         const admin = await Admin.find()
         res.status(200).json({
@@ -116,10 +161,98 @@ const listAdmin = async (req, res, next) => {
     }
 }
 
+const getAdminById = async (req, res, next) => {
+    const { id } = req.params
+    try {
+        const admin = await Admin.findOne({ _id: id })
+        if (!admin) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'admin not found'
+            });
+        }
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: admin
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
+const editAdmin = async (req, res, next) => {
+    const { id } = req.params
+    const {
+        email,
+        password,
+        nama,
+        role
+    } = req.body
+    try {
+        const updatedAdmin = await Admin.updateOne({ _id: id }, {
+            $set: {
+                email,
+                password,
+                nama,
+                role
+            }
+        })
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: updatedAdmin
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
+const deleteAdmin = async (req, res, next) => {
+    const { id } = req.params
+    try {
+        const deletedAdmin = await Admin.deleteOne({ _id: id })
+        if (deletedAdmin.deletedCount === 0) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'faq not found'
+            });
+        }
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: deletedAdmin
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
 const adminController = {
     login,
     register,
-    listAdmin
+    getAdmin,
+    getAdminById,
+    createAdmin,
+    editAdmin,
+    deleteAdmin
 }
 
 export default adminController

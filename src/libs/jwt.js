@@ -8,8 +8,8 @@ const {
     REFRESH_TOKEN } = config
 
 //generate access JWT token by id 
-const createAccessToken = (id) => {
-    return jwt.sign({ id }, ACCESS_TOKEN, { expiresIn: MAX_AGE_ACCESS_TOKEN });
+const createAccessToken = ({ id, role }) => {
+    return jwt.sign({ id, role }, ACCESS_TOKEN, { expiresIn: MAX_AGE_ACCESS_TOKEN });
 }
 
 //generate refresh JWT token by id

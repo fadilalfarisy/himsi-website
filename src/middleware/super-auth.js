@@ -1,6 +1,7 @@
+import { decode } from 'jsonwebtoken';
 import { verifyAccessToken } from '../libs/jwt.js';
 
-const auth = (req, res, next) => {
+const superAuth = (req, res, next) => {
     let accessToken = req.headers.authorization
     if (!accessToken) {
         return res.status(401).json({
@@ -13,13 +14,14 @@ const auth = (req, res, next) => {
     try {
         accessToken = accessToken.split(' ')[1];
         verifyAccessToken(accessToken, (error, decoded) => {
-            if (error) {
+            if (error || decoded.role !== 'super admin') {
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',
                     info: 'forbidden'
                 });
             }
+            console.log(decoded.role)
             req.token = decoded
             next()
         })
@@ -34,4 +36,4 @@ const auth = (req, res, next) => {
     }
 };
 
-export default auth
+export default superAuth
