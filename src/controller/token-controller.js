@@ -12,13 +12,14 @@ const checkRefreshToken = async (req, res, next) => {
         }
         verifyRefreshToken(refreshToken, (error, decoded) => {
             if (error) {
+                console.log(error)
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',
                     info: 'forbidden'
                 });
             }
-            const accessToken = createAccessToken(decoded.id)
+            const accessToken = createAccessToken({ id: decoded.id, role: decoded.role })
             res.status(200).json({
                 status: 200,
                 message: 'success',
