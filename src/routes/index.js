@@ -9,6 +9,7 @@ import berita from './berita.js'
 import collegeLink from './college-link.js'
 import partner from "./partner.js"
 import sliderInformation from "./slider.js"
+import medsos from "./medsos.js"
 
 const router = express.Router()
 
@@ -22,5 +23,6 @@ router.use('/', berita)
 router.use('/', collegeLink)
 router.use('/', partner)
 router.use('/', sliderInformation)
+router.use('/', medsos)
 
 export default router
