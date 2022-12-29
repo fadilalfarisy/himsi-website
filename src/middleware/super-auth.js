@@ -14,11 +14,17 @@ const superAuth = (req, res, next) => {
     try {
         accessToken = accessToken.split(' ')[1];
         verifyAccessToken(accessToken, (error, decoded) => {
-            if (error || decoded.role !== 'super admin') {
+            if (error) {
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',
                     info: 'forbidden'
+                });
+            } else if (decoded.role !== 'super admin') {
+                return res.status(401).json({
+                    status: 401,
+                    message: 'failed',
+                    info: 'your not super admin'
                 });
             }
             console.log(decoded.role)

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const adminSchema = new mongoose.Schema({
-    email: {
+    username: {
         type: String,
         required: true,
         unique: true
@@ -11,10 +11,11 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    nama: String,
+    nama_admin: String,
     role: {
         type: String,
-        enum: ['super admin', 'admin']
+        enum: ['super admin', 'admin'],
+        default: 'super admin'
     }
 });
 

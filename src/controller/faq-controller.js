@@ -1,7 +1,7 @@
 import Faq from '../model/faq.js'
 
 const createFaq = async (req, res, next) => {
-    const { pertanyaan, 
+    const { pertanyaan,
         jawaban } = req.body
     try {
         const newFaq = await Faq.create({
@@ -69,19 +69,19 @@ const getFaqById = async (req, res, next) => {
 
 const editFaq = async (req, res, next) => {
     const { id } = req.params
-    const { pertanyaan, 
+    const { pertanyaan,
         jawaban } = req.body
     try {
         const updatedFaq = await Faq.updateOne({ _id: id }, {
             $set: {
-                pertanyaan, 
-                jawaban 
+                pertanyaan,
+                jawaban
             }
         })
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: updatedFaq
+            data: 'successfully edited faq'
         })
     } catch (error) {
         console.log(error.message)
@@ -107,7 +107,7 @@ const deleteFaq = async (req, res, next) => {
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: deletedFaq
+            data: 'successfully deleted faq'
         })
     } catch (error) {
         console.log(error.message)

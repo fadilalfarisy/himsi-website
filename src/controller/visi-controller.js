@@ -3,33 +3,26 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-import Visi from "../model/visi-misi.js"
+import Himpunan from "../model/himpunan.js"
 
 const createVisi = async (req, res, next) => {
     const {
         visi,
-        misi,
-        angkatan } = req.body
+        misi } = req.body
     try {
-        if (!req.file) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'please upload image'
-            });
-        }
-        const pathVisi = req.file.path
-
-        const newVisi = await Visi.create({
-            visi,
-            misi,
-            gambar: pathVisi,
-            angkatan
-        });
+        await Himpunan.updateMany({}, {
+            $set: {
+                visi: visi,
+                misi: misi,
+            }
+        })
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: newVisi
+            data: {
+                visi,
+                misi
+            }
         })
     } catch (error) {
         console.log(error.message);
@@ -43,7 +36,7 @@ const createVisi = async (req, res, next) => {
 
 const getVisi = async (req, res, next) => {
     try {
-        const visi = await Visi.find()
+        const visi = await Himpunan.find()
         res.status(200).json({
             status: 200,
             message: 'success',
@@ -62,7 +55,7 @@ const getVisi = async (req, res, next) => {
 const getVisiById = async (req, res, next) => {
     const { id } = req.params
     try {
-        const visi = await Visi.findOne({ _id: id })
+        const visi = await Himpunan.findOne({ _id: id })
         if (!visi) {
             return res.status(400).json({
                 status: 400,
@@ -85,46 +78,22 @@ const getVisiById = async (req, res, next) => {
     }
 }
 
-
 const editVisi = async (req, res, next) => {
-    const { id } = req.params
     const {
         visi,
-        misi,
-        angkatan } = req.body
+        misi } = req.body
     try {
-        if (!req.file) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'please upload image'
-            });
-        }
 
-        const existingVisi = await Visi.findOne({ _id: id })
-        if (!existingVisi) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'visi not found'
-            });
-        }
-        const imagePath = path.join(__dirname, '../../', existingVisi.gambar)
-        fs.unlink(imagePath, (err) => { console.log(err) })
-
-        const pathVisi = req.file.path
-        const updatedVisi = await Visi.updateOne({ _id: id }, {
+        await Himpunan.updateMany({}, {
             $set: {
                 visi,
                 misi,
-                angkatan,
-                gambar: pathVisi
             }
         })
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: updatedVisi
+            data: 'successfully edited visi misi'
         })
     } catch (error) {
         console.log(error.message)
@@ -137,31 +106,19 @@ const editVisi = async (req, res, next) => {
 }
 
 const deleteVisi = async (req, res, next) => {
-    const { id } = req.params
     try {
-        const visi = await Visi.findOne({ _id: id })
-        if (!visi) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'visi not found'
-            });
-        }
-        const imagePath = path.join(__dirname, '../../', visi.gambar)
-        fs.unlink(imagePath, (err) => { console.log(err) })
 
-        const deletedVisi = await Visi.deleteOne({ _id: id })
-        if (deletedVisi.deletedCount === 0) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'divisi not found'
-            });
-        }
+        await Himpunan.updateMany({}, {
+            $set: {
+                visi: '',
+                misi: [],
+            }
+        })
+
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: deletedVisi
+            data: 'successfully deleted visi misi'
         })
     } catch (error) {
         return res.status(500).json({

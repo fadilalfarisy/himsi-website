@@ -3,109 +3,101 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-import Berita from "../model/berita.js"
+import Himpunan from "../model/himpunan.js"
 
-const createBerita = async (req, res, next) => {
+const createHimpunan = async (req, res, next) => {
     const {
-        judul_berita,
-        tanggal_berita,
-        isi_berita,
-        penulis_berita,
-        link_berita } = req.body
-    try {
-        if (!req.files.header_berita || !req.files.gambar_berita) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'please upload image'
-            });
-        }
-        const {
-            header_berita: [{ path: pathHeaderBerita }],
-            gambar_berita: [{ path: pathGambarBerita }],
-        } = req.files
-
-        const newBerita = await Berita.create({
-            judul_berita,
-            tanggal_berita,
-            isi_berita,
-            penulis_berita,
-            link_berita,
-            header_berita: pathHeaderBerita,
-            gambar_berita: pathGambarBerita,
-        });
-
-        res.status(200).json({
-            status: 200,
-            message: 'success',
-            data: newBerita
-        })
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            status: 500,
-            message: 'failed',
-            info: 'server error'
-        });
-    }
-}
-
-const getBerita = async (req, res, next) => {
-    try {
-        const berita = await Berita.find()
-        res.status(200).json({
-            status: 200,
-            message: 'success',
-            data: berita
-        })
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            status: 500,
-            message: 'failed',
-            info: 'server error'
-        });
-    }
-}
-
-const getBeritaById = async (req, res, next) => {
-    const { id } = req.params
-    try {
-        const berita = await Berita.findOne({ _id: id })
-        if (!berita) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'berita not found'
-            });
-        }
-        res.status(200).json({
-            status: 200,
-            message: 'success',
-            data: berita
-        })
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            status: 500,
-            message: 'failed',
-            info: 'server error'
-        });
-    }
-}
-
-
-const editBerita = async (req, res, next) => {
-    const { id } = req.params
-    const {
-        judul_berita,
-        tanggal_berita,
-        isi_berita,
-        penulis_berita,
-        link_berita,
+        nama_himpunan,
+        nama_universitas
     } = req.body
     try {
-        if (!req.files.header_berita || !req.files.gambar_berita) {
+        if (!req.files.gambar_struktur || !req.files.logo_himpunan) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'please upload image'
+            });
+        }
+        const {
+            logo_himpunan: [{ path: pathLogoHimpunan }],
+            gambar_struktur: [{ path: pathGambarStruktur }],
+        } = req.files
+
+        const newHimpunan = await Himpunan.create({
+            nama_himpunan,
+            nama_universitas,
+            gambar_struktur: pathGambarStruktur,
+            logo_himpunan: pathLogoHimpunan,
+        });
+
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: newHimpunan
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
+const getHimpunan = async (req, res, next) => {
+    try {
+        const himpunan = await Himpunan.find()
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: himpunan
+        })
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
+const getHimpunanById = async (req, res, next) => {
+    const { id } = req.params
+    try {
+        const himpunan = await Himpunan.findOne({ _id: id })
+        if (!himpunan) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'himpunan not found'
+            });
+        }
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: himpunan
+        })
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
+
+const editHimpunan = async (req, res, next) => {
+    const {
+        nama_himpunan,
+        nama_universitas
+    } = req.body
+    try {
+        if (!req.files.gambar_struktur || !req.files.logo_himpunan) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
@@ -114,56 +106,53 @@ const editBerita = async (req, res, next) => {
         }
 
         const {
-            header_berita: [{ path: pathHeaderBerita }],
-            gambar_berita: [{ path: pathGambarBerita }],
+            gambar_struktur: [{ path: pathGambarStruktur }],
+            logo_himpunan: [{ path: pathLogoHimpunan }],
         } = req.files
 
-        const existingBerita = await Berita.findOne({ _id: id })
-        if (!existingBerita) {
+        const existingHimpunan = await Himpunan.findOne()
+        if (!existingHimpunan) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
-                info: 'berita not found'
+                info: 'himpunan not found'
             });
         }
 
-        const oldpathGambarBerita = path.join(__dirname, '../../', existingBerita.gambar_berita)
-        const oldpathHeaderBerita = path.join(__dirname, '../../', existingBerita.header_berita)
+        const oldPathGambarStruktur = path.join(__dirname, '../../', existingHimpunan.gambar_struktur)
+        const oldPathLogoHimpunan = path.join(__dirname, '../../', existingHimpunan.logo_himpunan)
 
-        fs.unlink(oldpathGambarBerita, (err) => {
+        fs.unlink(oldPathGambarStruktur, (err) => {
             if (err) {
                 return res.status(400).json({
                     status: 400,
                     message: 'failed',
-                    info: 'failed to edit berita'
+                    info: 'failed to edit himpunan'
                 });
             }
         })
-        fs.unlink(oldpathHeaderBerita, (err) => {
+        fs.unlink(oldPathLogoHimpunan, (err) => {
             if (err) {
                 return res.status(400).json({
                     status: 400,
                     message: 'failed',
-                    info: 'failed to edit berita'
+                    info: 'failed to edit himpunan'
                 });
             }
         })
 
-        await Berita.updateOne({ _id: id }, {
+        await Himpunan.updateMany({}, {
             $set: {
-                judul_berita,
-                tanggal_berita,
-                isi_berita,
-                penulis_berita,
-                link_berita,
-                header_berita: pathHeaderBerita,
-                gambar_berita: pathGambarBerita,
+                nama_himpunan,
+                nama_universitas,
+                gambar_struktur: pathGambarStruktur,
+                logo_himpunan: pathLogoHimpunan,
             }
         })
         return res.status(200).json({
             status: 200,
             message: 'success',
-            data: 'successfully edited berita'
+            data: 'successfully edited himpunan'
         })
     } catch (error) {
         console.log(error.message)
@@ -175,52 +164,55 @@ const editBerita = async (req, res, next) => {
     }
 }
 
-const deleteBerita = async (req, res, next) => {
+const deleteHimpunan = async (req, res, next) => {
     const { id } = req.params
     try {
-        const berita = await Berita.findOne({ _id: id })
-        if (!berita) {
+        const himpunan = await Himpunan.findOne({ _id: id })
+        if (!himpunan) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
-                info: 'berita not found'
+                info: 'himpunan not found'
             });
         }
-        const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
-        const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
-        fs.unlink(pathHeaderBerita, (err) => {
+
+        const pathGambarStruktur = path.join(__dirname, '../../', himpunan.gambar_struktur)
+        const pathLogoHimpunan = path.join(__dirname, '../../', himpunan.logo_himpunan)
+        fs.unlink(pathGambarStruktur, (err) => {
             if (err) {
                 return res.status(400).json({
                     status: 400,
                     message: 'failed',
-                    info: 'failed to delete berita'
+                    info: 'failed to deleted himpunan'
                 });
             }
         })
-        fs.unlink(pathGambarBerita, (err) => {
+        fs.unlink(pathLogoHimpunan, (err) => {
             if (err) {
                 return res.status(400).json({
                     status: 400,
                     message: 'failed',
-                    info: 'failed to edit berita'
+                    info: 'failed to deleted himpunan'
                 });
             }
         })
 
-        const deletedBerita = await Berita.deleteOne({ _id: id })
-        if (deletedBerita.deletedCount === 0) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'berita not found'
-            });
-        }
-        return res.status(200).json({
+        await Himpunan.updateMany({}, {
+            $set: {
+                nama_himpunan: '',
+                nama_universitas: '',
+                gambar_struktur: '',
+                logo_himpunan: '',
+            }
+        })
+
+        res.status(200).json({
             status: 200,
             message: 'success',
-            data: 'successfully deleted berita'
+            data: 'successfully deleted himpunan'
         })
     } catch (error) {
+        console.log(error.message)
         return res.status(500).json({
             status: 500,
             message: 'failed',
@@ -229,12 +221,12 @@ const deleteBerita = async (req, res, next) => {
     }
 }
 
-const beritaController = {
-    createBerita,
-    getBerita,
-    getBeritaById,
-    editBerita,
-    deleteBerita,
+const himpunanController = {
+    createHimpunan,
+    getHimpunan,
+    getHimpunanById,
+    editHimpunan,
+    deleteHimpunan,
 }
 
-export default beritaController
+export default himpunanController

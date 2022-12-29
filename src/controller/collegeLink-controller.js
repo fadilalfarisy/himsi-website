@@ -104,7 +104,7 @@ const editCollegeLink = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: "success",
-      data: updatedCollegeLink,
+      data: 'successfully edited college link',
     });
   } catch (error) {
     console.log(error.message);
@@ -134,7 +134,7 @@ const deleteCollegeLink = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: "success",
-      data: deletedCollegeLink,
+      data: 'successfully deleted college link'
     });
   } catch (error) {
     console.log(error.message);

@@ -3,25 +3,24 @@ import Admin from '../model/admin.js'
 import { createAccessToken, createRefreshToken } from '../libs/jwt.js';
 
 const register = async (req, res, next) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        //check duplicated email
-        const admin = await Admin.findOne({ email });
+        //check duplicated username
+        const admin = await Admin.findOne({ username });
         if (admin) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
-                info: 'email is duplicate'
+                info: 'username was used'
             });
         }
         //save new admin
-        let role = 'super admin'
         const newAdmin = await Admin.create({
-            email,
-            password,
-            role
+            username,
+            password
         });
 
+        let role = 'super admin'
         const accessToken = createAccessToken({
             id: newAdmin._id,
             role: role
@@ -39,8 +38,8 @@ const register = async (req, res, next) => {
         res.status(201).json({
             status: 201,
             message: 'success',
-            admin_id: newAdmin._id,
-            email: newAdmin.email,
+            username: newAdmin.username,
+            role: role,
             accessToken: accessToken
         });
 
@@ -55,15 +54,15 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        //check email is exist
-        const admin = await Admin.findOne({ email });
+        //check username is exist
+        const admin = await Admin.findOne({ username });
         if (!admin) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
-                info: 'email is invalid'
+                info: 'username is invalid'
             });
         }
 
@@ -77,14 +76,9 @@ const login = async (req, res) => {
             });
         }
 
-        let role = 'super admin'
-        if (admin.role) {
-            role = admin.role
-        }
-
         const accessToken = createAccessToken({
             id: admin._id,
-            role: role
+            role: admin.role
         });
         const refreshToken = createRefreshToken(admin._id);
 
@@ -99,8 +93,8 @@ const login = async (req, res) => {
         res.status(200).json({
             status: 200,
             message: 'success',
-            admin_id: admin._id,
-            email: admin.email,
+            username: admin.username,
+            role: admin.role,
             accessToken: accessToken
         });
 
@@ -116,16 +110,16 @@ const login = async (req, res) => {
 
 const createAdmin = async (req, res, next) => {
     const {
-        email,
+        username,
         password,
-        nama,
+        nama_admin,
         role
     } = req.body
     try {
         const newAdmin = await Admin.create({
-            email,
+            username,
             password,
-            nama,
+            nama_admin,
             role
         });
         res.status(200).json({
@@ -190,24 +184,24 @@ const getAdminById = async (req, res, next) => {
 const editAdmin = async (req, res, next) => {
     const { id } = req.params
     const {
-        email,
+        username,
         password,
-        nama,
+        nama_admin,
         role
     } = req.body
     try {
         const updatedAdmin = await Admin.updateOne({ _id: id }, {
             $set: {
-                email,
+                username,
                 password,
-                nama,
+                nama_admin,
                 role
             }
         })
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: updatedAdmin
+            data: 'successfully edited admin'
         })
     } catch (error) {
         console.log(error.message)
@@ -227,13 +221,13 @@ const deleteAdmin = async (req, res, next) => {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
-                info: 'faq not found'
+                info: 'admin not found'
             });
         }
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: deletedAdmin
+            data: 'successfully deleted admin'
         })
     } catch (error) {
         console.log(error.message)

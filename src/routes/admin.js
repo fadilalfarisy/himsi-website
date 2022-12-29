@@ -8,9 +8,9 @@ const admin = express.Router()
 admin.post('/login', adminController.login)
 admin.post('/register', adminController.register)
 
-admin.get('/admin', superAuth, adminController.getAdmin)
+admin.get('/admin', adminController.getAdmin)
 admin.get('/admin/:id', adminController.getAdminById)
-admin.post('/admin/', adminController.createAdmin)
+admin.post('/admin', superAuth, adminController.createAdmin)
 admin.put('/admin/:id', adminController.editAdmin)
 admin.delete('/admin/:id', adminController.deleteAdmin)
 

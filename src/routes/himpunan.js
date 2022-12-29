@@ -1,6 +1,6 @@
 import express from "express"
 import multer from "multer"
-import beritaController from '../controller/berita-controller.js'
+import himpunanController from '../controller/himpunan-controller.js'
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -28,18 +28,18 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: filestorage, fileFilter: fileFilter })
 
-const berita = express.Router()
+const himpunan = express.Router()
 
-berita.get('/berita/', beritaController.getBerita)
-berita.get('/berita/:id', beritaController.getBeritaById)
-berita.post('/berita', upload.fields([
-    { name: 'header_berita', maxCount: 1 },
-    { name: 'gambar_berita', maxCount: 1 }
-]), beritaController.createBerita)
-berita.put('/berita/:id', upload.fields([
-    { name: 'header_berita', maxCount: 1 },
-    { name: 'gambar_berita', maxCount: 1 }
-]), beritaController.editBerita)
-berita.delete('/berita/:id', beritaController.deleteBerita)
+himpunan.get('/himpunan', himpunanController.getHimpunan)
+himpunan.get('/himpunan/:id', himpunanController.getHimpunanById)
+himpunan.post('/himpunan', upload.fields([
+    { name: 'gambar_struktur', maxCount: 1 },
+    { name: 'logo_himpunan', maxCount: 1 }
+]), himpunanController.createHimpunan)
+himpunan.put('/himpunan', upload.fields([
+    { name: 'gambar_struktur', maxCount: 1 },
+    { name: 'logo_himpunan', maxCount: 1 }
+]), himpunanController.editHimpunan)
+himpunan.delete('/himpunan/:id', himpunanController.deleteHimpunan)
 
-export default berita
+export default himpunan
