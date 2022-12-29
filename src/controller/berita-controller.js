@@ -52,12 +52,36 @@ const createBerita = async (req, res, next) => {
 
 const getBerita = async (req, res, next) => {
     try {
-        const berita = await Berita.find()
+        let { search } = req.query;
+        let query = {}
+
+        if (search) {
+            query = {
+                ...query,
+                $or: [{
+                    'judul_berita': {
+                        $regex: search,
+                        $options: "i"
+                    },
+                }, {
+                    'isi_berita': {
+                        $regex: search,
+                        $options: "i"
+                    },
+                }]
+            }
+        }
+
+        let berita = await Berita.aggregate([{
+            $match: query
+        },])
+
         res.status(200).json({
             status: 200,
             message: 'success',
             data: berita
         })
+
     } catch (error) {
         console.log(error.message);
         res.status(500).json({

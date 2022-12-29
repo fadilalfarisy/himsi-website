@@ -1,6 +1,6 @@
 import express from "express"
 import multer from "multer"
-import himpunanController from '../controller/himpunan-controller.js'
+import eventController from '../controller/event-controller.js'
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -28,13 +28,18 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: filestorage, fileFilter: fileFilter })
 
-const himpunan = express.Router()
+const event = express.Router()
 
-himpunan.get('/himpunan', himpunanController.getHimpunan)
-himpunan.post('/himpunan', upload.fields([
-    { name: 'gambar_struktur', maxCount: 1 },
-    { name: 'logo_himpunan', maxCount: 1 }
-]), himpunanController.saveHimpunan)
-himpunan.delete('/himpunan/:id', himpunanController.deleteHimpunan)
+event.get('/event/', eventController.getEvent)
+event.get('/event/:id', eventController.getEventById)
+event.post('/event', upload.fields([
+    { name: 'header_event', maxCount: 1 },
+    { name: 'gambar_event', maxCount: 1 }
+]), eventController.createEvent)
+event.put('/event/:id', upload.fields([
+    { name: 'header_event', maxCount: 1 },
+    { name: 'gambar_event', maxCount: 1 }
+]), eventController.editEvent)
+event.delete('/event/:id', eventController.deleteEvent)
 
-export default himpunan
+export default event
