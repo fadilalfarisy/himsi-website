@@ -5,8 +5,14 @@ const beritaSchema = new mongoose.Schema({
     tanggal_berita: Date,
     isi_berita: String,
     penulis_berita: String,
-    header_berita: String,
-    gambar_berita: String,
+    header_berita: {
+        public_id: String,
+        url: String
+    },
+    gambar_berita: {
+        public_id: String,
+        url: String
+    },
     link_berita: String
 });
 

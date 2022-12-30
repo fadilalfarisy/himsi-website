@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 import Berita from "../model/berita.js"
+import cloudinary from '../libs/cloudinary.js';
 
 const createBerita = async (req, res, next) => {
     const {
@@ -25,14 +26,23 @@ const createBerita = async (req, res, next) => {
             gambar_berita: [{ path: pathGambarBerita }],
         } = req.files
 
+        const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
+        const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
+
         const newBerita = await Berita.create({
             judul_berita,
             tanggal_berita,
             isi_berita,
             penulis_berita,
             link_berita,
-            header_berita: pathHeaderBerita,
-            gambar_berita: pathGambarBerita,
+            header_berita: {
+                public_id: uploadHeaderBerita.public_id,
+                url: uploadHeaderBerita.secure_url
+            },
+            gambar_berita: {
+                public_id: uploadGambarBerita.public_id,
+                url: uploadGambarBerita.secure_url
+            },
         });
 
         res.status(200).json({
@@ -151,27 +161,37 @@ const editBerita = async (req, res, next) => {
             });
         }
 
-        const oldpathGambarBerita = path.join(__dirname, '../../', existingBerita.gambar_berita)
-        const oldpathHeaderBerita = path.join(__dirname, '../../', existingBerita.header_berita)
+        //delete old images
+        cloudinary.uploader.destroy(existingBerita.header_berita.public_id)
+            .then(result => console.log(result))
+        cloudinary.uploader.destroy(existingBerita.gambar_berita.public_id)
+            .then(result => console.log(result))
 
-        fs.unlink(oldpathGambarBerita, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: 'failed to edit berita'
-                });
-            }
-        })
-        fs.unlink(oldpathHeaderBerita, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: 'failed to edit berita'
-                });
-            }
-        })
+        //save new images
+        const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
+        const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
+
+        // const oldpathGambarBerita = path.join(__dirname, '../../', existingBerita.gambar_berita)
+        // const oldpathHeaderBerita = path.join(__dirname, '../../', existingBerita.header_berita)
+
+        // fs.unlink(oldpathGambarBerita, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to edit berita'
+        //         });
+        //     }
+        // })
+        // fs.unlink(oldpathHeaderBerita, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to edit berita'
+        //         });
+        //     }
+        // })
 
         await Berita.updateOne({ _id: id }, {
             $set: {
@@ -180,8 +200,14 @@ const editBerita = async (req, res, next) => {
                 isi_berita,
                 penulis_berita,
                 link_berita,
-                header_berita: pathHeaderBerita,
-                gambar_berita: pathGambarBerita,
+                header_berita: {
+                    public_id: uploadHeaderBerita.public_id,
+                    url: uploadHeaderBerita.secure_url
+                },
+                gambar_berita: {
+                    public_id: uploadGambarBerita.public_id,
+                    url: uploadGambarBerita.secure_url
+                },
             }
         })
         return res.status(200).json({
@@ -210,26 +236,33 @@ const deleteBerita = async (req, res, next) => {
                 info: 'berita not found'
             });
         }
-        const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
-        const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
-        fs.unlink(pathHeaderBerita, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: 'failed to delete berita'
-                });
-            }
-        })
-        fs.unlink(pathGambarBerita, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: 'failed to edit berita'
-                });
-            }
-        })
+
+        //delete image
+        cloudinary.uploader.destroy(berita.header_berita.public_id)
+            .then(result => console.log(result))
+        cloudinary.uploader.destroy(berita.gambar_berita.public_id)
+            .then(result => console.log(result))
+
+        // const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
+        // const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
+        // fs.unlink(pathHeaderBerita, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to delete berita'
+        //         });
+        //     }
+        // })
+        // fs.unlink(pathGambarBerita, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to edit berita'
+        //         });
+        //     }
+        // })
 
         const deletedBerita = await Berita.deleteOne({ _id: id })
         if (deletedBerita.deletedCount === 0) {
@@ -245,6 +278,7 @@ const deleteBerita = async (req, res, next) => {
             data: 'successfully deleted berita'
         })
     } catch (error) {
+        console.log(error.message)
         return res.status(500).json({
             status: 500,
             message: 'failed',
