@@ -31,7 +31,7 @@ const upload = multer({ storage: filestorage, fileFilter: fileFilter })
 const himpunan = express.Router()
 
 himpunan.get('/himpunan', himpunanController.getHimpunan)
-himpunan.post('/himpunan', upload.fields([
+himpunan.put('/himpunan', upload.fields([
     { name: 'gambar_struktur', maxCount: 1 },
     { name: 'logo_himpunan', maxCount: 1 }
 ]), himpunanController.saveHimpunan)

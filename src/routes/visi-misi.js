@@ -3,7 +3,7 @@ import visiController from '../controller/visi-controller.js'
 
 const visiMisi = express.Router()
 
-visiMisi.post('/visi', visiController.saveVisi)
-visiMisi.delete('/visi', visiController.deleteVisi)
+visiMisi.get('/visi', visiController.getVisi)
+visiMisi.put('/visi', visiController.saveVisi)
 
 export default visiMisi

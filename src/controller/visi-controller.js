@@ -45,7 +45,12 @@ const saveVisi = async (req, res, next) => {
 
 const getVisi = async (req, res, next) => {
     try {
-        const visi = await Himpunan.find()
+        const visi = await Himpunan.findOne({})
+            .select({
+                _id: 1,
+                visi: 1,
+                misi: 1
+            })
         res.status(200).json({
             status: 200,
             message: 'success',
@@ -54,30 +59,6 @@ const getVisi = async (req, res, next) => {
     } catch (error) {
         console.log(error.message);
         res.status(500).json({
-            status: 500,
-            message: 'failed',
-            info: 'server error'
-        });
-    }
-}
-
-const deleteVisi = async (req, res, next) => {
-    try {
-
-        await Himpunan.updateMany({}, {
-            $set: {
-                visi: '',
-                misi: [],
-            }
-        })
-
-        res.status(200).json({
-            status: 200,
-            message: 'success',
-            data: 'successfully deleted visi misi'
-        })
-    } catch (error) {
-        return res.status(500).json({
             status: 500,
             message: 'failed',
             info: 'server error'

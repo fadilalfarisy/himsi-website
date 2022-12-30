@@ -100,8 +100,15 @@ const saveHimpunan = async (req, res, next) => {
 
 const getHimpunan = async (req, res, next) => {
     try {
-        const himpunan = await Himpunan.find()
-        res.status(200).json({
+        const himpunan = await Himpunan.findOne({})
+            .select({
+                _id: 1,
+                nama_himpunan: 1,
+                nama_universitas: 1,
+                logo_himpunan: 1,
+                gambar_struktur: 1
+            })
+        return res.status(200).json({
             status: 200,
             message: 'success',
             data: himpunan
