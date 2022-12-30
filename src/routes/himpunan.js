@@ -5,9 +5,9 @@ import himpunanController from '../controller/himpunan-controller.js'
 //config images storage
 const filestorage = multer.diskStorage({
     //path images storage
-    destination: (req, file, cb) => {
-        cb(null, './public/images')
-    },
+    // destination: (req, file, cb) => {
+    //     cb(null, './public/images')
+    // },
     //named the image file
     filename: (req, file, cb) => {
         cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
