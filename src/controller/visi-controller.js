@@ -69,7 +69,6 @@ const getVisi = async (req, res, next) => {
 const visiController = {
     saveVisi,
     getVisi,
-    deleteVisi,
 }
 
 export default visiController
