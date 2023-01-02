@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
+import {
+    fileURLToPath
+} from 'url'
+const __filename = fileURLToPath(
+    import.meta.url)
 const __dirname = path.dirname(__filename)
 import Himpunan from "../model/himpunan.js"
 import cloudinary from '../libs/cloudinary.js';
@@ -11,20 +14,10 @@ const saveHimpunan = async (req, res, next) => {
         nama_himpunan,
         nama_universitas
     } = req.body
+
+    let logo_himpunan, public_id_logo_himpunan, gambar_struktur, public_id_gambar_struktur = ''
+
     try {
-        if (!req.files.gambar_struktur || !req.files.logo_himpunan) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'please upload image'
-            });
-        }
-
-        const {
-            gambar_struktur: [{ path: pathGambarStruktur }],
-            logo_himpunan: [{ path: pathLogoHimpunan }],
-        } = req.files
-
         const existingHimpunan = await Himpunan.findOne()
         if (!existingHimpunan) {
             await Himpunan.create({
@@ -33,53 +26,107 @@ const saveHimpunan = async (req, res, next) => {
                 gambar_struktur: '',
                 logo_himpunan: '',
             });
-        } else {
-            if (existingHimpunan.gambar_struktur || existingHimpunan.logo_himpunan) {
-
-                //delete old images
-                cloudinary.uploader.destroy(existingHimpunan.gambar_struktur.public_id)
-                    .then(result => console.log(result))
-                cloudinary.uploader.destroy(existingHimpunan.logo_himpunan.public_id)
-                    .then(result => console.log(result))
-
-                // const oldPathGambarStruktur = path.join(__dirname, '../../', existingHimpunan.gambar_struktur)
-                // const oldPathLogoHimpunan = path.join(__dirname, '../../', existingHimpunan.logo_himpunan)
-
-                // fs.unlink(oldPathGambarStruktur, (err) => {
-                //     if (err) {
-                //         return res.status(400).json({
-                //             status: 400,
-                //             message: 'failed',
-                //             info: 'failed to edit himpunan'
-                //         });
-                //     }
-                // })
-                // fs.unlink(oldPathLogoHimpunan, (err) => {
-                //     if (err) {
-                //         return res.status(400).json({
-                //             status: 400,
-                //             message: 'failed',
-                //             info: 'failed to edit himpunan'
-                //         });
-                //     }
-                // })
-            }
         }
 
-        const uploadGambarStruktur = await cloudinary.uploader.upload(pathGambarStruktur)
-        const uploadLogoHimpunan = await cloudinary.uploader.upload(pathLogoHimpunan)
+        //updated gambar struktur only
+        if (req.files.gambar_struktur && !req.files.logo_himpunan) {
+            const {
+                gambar_struktur: [{
+                    path: pathGambarStruktur
+                }]
+            } = req.files
+
+            //delete old images
+            cloudinary.uploader.destroy(existingHimpunan.gambar_struktur.public_id)
+                .then(result => console.log(result))
+            //updated gambar struktur
+            const uploadGambarStruktur = await cloudinary.uploader.upload(pathGambarStruktur)
+
+            logo_himpunan = existingHimpunan.logo_himpunan.url
+            public_id_logo_himpunan = existingHimpunan.logo_himpunan.public_id
+            gambar_struktur = uploadGambarStruktur.secure_url
+            public_id_gambar_struktur = uploadGambarStruktur.public_id
+            console.log('update with new struktur')
+            //updated logo himpunan only
+        } else if (req.files.logo_himpunan && !req.files.gambar_struktur) {
+            const {
+                logo_himpunan: [{
+                    path: pathLogoHimpunan
+                }],
+            } = req.files
+
+            //delete old images
+            cloudinary.uploader.destroy(existingHimpunan.logo_himpunan.public_id)
+                .then(result => console.log(result))
+            //updated logo himpunan
+            const uploadLogoHimpunan = await cloudinary.uploader.upload(pathLogoHimpunan)
+
+            logo_himpunan = uploadLogoHimpunan.secure_url
+            public_id_logo_himpunan = uploadLogoHimpunan.public_id
+            gambar_struktur = existingHimpunan.logo_himpunan.url
+            public_id_gambar_struktur = existingHimpunan.logo_himpunan.public_id
+            console.log('update with new logo')
+            //updated logo himpunan and gambar struktur 
+        } else if (req.files.logo_himpunan && req.files.gambar_struktur) {
+            const {
+                gambar_struktur: [{
+                    path: pathGambarStruktur
+                }],
+                logo_himpunan: [{
+                    path: pathLogoHimpunan
+                }],
+            } = req.files
+
+            //delete old images
+            cloudinary.uploader.destroy(existingHimpunan.logo_himpunan.public_id)
+                .then(result => console.log(result))
+            cloudinary.uploader.destroy(existingHimpunan.gambar_struktur.public_id)
+                .then(result => console.log(result))
+            //updated gambar struktur
+            const uploadGambarStruktur = await cloudinary.uploader.upload(pathGambarStruktur)
+            const uploadLogoHimpunan = await cloudinary.uploader.upload(pathLogoHimpunan)
+
+            logo_himpunan = uploadLogoHimpunan.secure_url
+            public_id_logo_himpunan = uploadLogoHimpunan.public_id
+            gambar_struktur = uploadGambarStruktur.secure_url
+            public_id_gambar_struktur = uploadGambarStruktur.public_id
+
+            console.log('update with new logo and struktur')
+        }
+
+        // const oldPathGambarStruktur = path.join(__dirname, '../../', existingHimpunan.gambar_struktur)
+        // const oldPathLogoHimpunan = path.join(__dirname, '../../', existingHimpunan.logo_himpunan)
+
+        // fs.unlink(oldPathGambarStruktur, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to edit himpunan'
+        //         });
+        //     }
+        // })
+        // fs.unlink(oldPathLogoHimpunan, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to edit himpunan'
+        //         });
+        //     }
+        // })
 
         await Himpunan.updateOne({}, {
             $set: {
                 nama_himpunan,
                 nama_universitas,
                 gambar_struktur: {
-                    public_id: uploadGambarStruktur.public_id,
-                    url: uploadGambarStruktur.secure_url
+                    public_id: public_id_gambar_struktur,
+                    url: gambar_struktur
                 },
                 logo_himpunan: {
-                    public_id: uploadLogoHimpunan.public_id,
-                    url: uploadLogoHimpunan.secure_url
+                    public_id: public_id_logo_himpunan,
+                    url: logo_himpunan
                 },
             }
         })
@@ -124,9 +171,13 @@ const getHimpunan = async (req, res, next) => {
 }
 
 const deleteHimpunan = async (req, res, next) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     try {
-        const himpunan = await Himpunan.findOne({ _id: id })
+        const himpunan = await Himpunan.findOne({
+            _id: id
+        })
         if (!himpunan) {
             return res.status(400).json({
                 status: 400,
@@ -165,7 +216,9 @@ const deleteHimpunan = async (req, res, next) => {
             // })
         }
 
-        await Himpunan.deleteOne({ _id: id })
+        await Himpunan.deleteOne({
+            _id: id
+        })
 
         return res.status(200).json({
             status: 200,

@@ -1,10 +1,17 @@
 import fs from 'fs';
 import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
+import {
+    fileURLToPath
+} from 'url'
+const __filename = fileURLToPath(
+    import.meta.url)
 const __dirname = path.dirname(__filename)
 import Berita from "../model/berita.js"
 import cloudinary from '../libs/cloudinary.js';
+
+function isEmptyObject(obj) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object
+}
 
 const createBerita = async (req, res, next) => {
     const {
@@ -12,7 +19,8 @@ const createBerita = async (req, res, next) => {
         tanggal_berita,
         isi_berita,
         penulis_berita,
-        link_berita } = req.body
+        link_berita
+    } = req.body
     try {
         if (!req.files.header_berita || !req.files.gambar_berita) {
             return res.status(400).json({
@@ -22,8 +30,12 @@ const createBerita = async (req, res, next) => {
             });
         }
         const {
-            header_berita: [{ path: pathHeaderBerita }],
-            gambar_berita: [{ path: pathGambarBerita }],
+            header_berita: [{
+                path: pathHeaderBerita
+            }],
+            gambar_berita: [{
+                path: pathGambarBerita
+            }],
         } = req.files
 
         const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
@@ -62,7 +74,9 @@ const createBerita = async (req, res, next) => {
 
 const getBerita = async (req, res, next) => {
     try {
-        let { search } = req.query;
+        let {
+            search
+        } = req.query;
         let query = {}
 
         if (search) {
@@ -84,7 +98,7 @@ const getBerita = async (req, res, next) => {
 
         let berita = await Berita.aggregate([{
             $match: query
-        },])
+        }, ])
 
         res.status(200).json({
             status: 200,
@@ -103,9 +117,13 @@ const getBerita = async (req, res, next) => {
 }
 
 const getBeritaById = async (req, res, next) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     try {
-        const berita = await Berita.findOne({ _id: id })
+        const berita = await Berita.findOne({
+            _id: id
+        })
         if (!berita) {
             return res.status(400).json({
                 status: 400,
@@ -130,7 +148,9 @@ const getBeritaById = async (req, res, next) => {
 
 
 const editBerita = async (req, res, next) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     const {
         judul_berita,
         tanggal_berita,
@@ -138,21 +158,14 @@ const editBerita = async (req, res, next) => {
         penulis_berita,
         link_berita,
     } = req.body
+
+    let header_berita, public_id_header_berita, gambar_berita, public_id_gambar_berita = ''
+
     try {
-        if (!req.files.header_berita || !req.files.gambar_berita) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'please upload image'
-            });
-        }
 
-        const {
-            header_berita: [{ path: pathHeaderBerita }],
-            gambar_berita: [{ path: pathGambarBerita }],
-        } = req.files
-
-        const existingBerita = await Berita.findOne({ _id: id })
+        const existingBerita = await Berita.findOne({
+            _id: id
+        })
         if (!existingBerita) {
             return res.status(400).json({
                 status: 400,
@@ -161,15 +174,77 @@ const editBerita = async (req, res, next) => {
             });
         }
 
-        //delete old images
-        cloudinary.uploader.destroy(existingBerita.header_berita.public_id)
-            .then(result => console.log(result))
-        cloudinary.uploader.destroy(existingBerita.gambar_berita.public_id)
-            .then(result => console.log(result))
+        //when gambar_berita and header_berita not updated
+        if (!req.files.gambar_berita && !req.files.header_berita) {
+            header_berita = existingBerita.header_berita.url
+            public_id_header_berita = existingBerita.header_berita.public_id
+            gambar_berita = existingBerita.gambar_berita.url
+            public_id_gambar_berita = existingBerita.gambar_berita.public_id
 
-        //save new images
-        const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
-        const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
+            //when header berita only is updated
+        } else if (req.files.header_berita && !req.files.gambar_berita) {
+            const {
+                header_berita: [{
+                    path: pathHeaderBerita
+                }],
+            } = req.files
+
+            //delete old images
+            cloudinary.uploader.destroy(existingBerita.header_berita.public_id)
+                .then(result => console.log(result))
+            //save new images
+            const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
+
+            header_berita = uploadHeaderBerita.secure_url
+            public_id_header_berita = uploadHeaderBerita.public_id
+            gambar_berita = existingBerita.gambar_berita.url
+            public_id_gambar_berita = existingBerita.gambar_berita.public_id
+
+            //when gambar_berita only is updated
+        } else if (req.files.gambar_berita && !req.files.header_berita) {
+            const {
+                gambar_berita: [{
+                    path: pathGambarBerita
+                }],
+            } = req.files
+
+            //delete old images
+            cloudinary.uploader.destroy(existingBerita.gambar_berita.public_id)
+                .then(result => console.log(result))
+            //save new images
+            const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
+
+            header_berita = existingBerita.header_berita.url
+            public_id_header_berita = existingBerita.header_berita.public_id
+            gambar_berita = uploadGambarBerita.secret_url
+            public_id_gambar_berita = uploadGambarBerita.public_id
+
+            //when gambar_berita and header is updated
+        } else if (req.files.header_berita && req.files.gambar_berita) {
+            const {
+                header_berita: [{
+                    path: pathHeaderBerita
+                }],
+                gambar_berita: [{
+                    path: pathGambarBerita
+                }],
+            } = req.files
+
+            //delete old images
+            cloudinary.uploader.destroy(existingBerita.header_berita.public_id)
+                .then(result => console.log(result))
+            cloudinary.uploader.destroy(existingBerita.gambar_berita.public_id)
+                .then(result => console.log(result))
+            //save new images
+            const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
+            const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
+
+            header_berita = uploadHeaderBerita.secure_url
+            public_id_header_berita = uploadHeaderBerita.public_id
+            gambar_berita = uploadGambarBerita.secure_url
+            public_id_gambar_berita = uploadGambarBerita.public_id
+        }
+
 
         // const oldpathGambarBerita = path.join(__dirname, '../../', existingBerita.gambar_berita)
         // const oldpathHeaderBerita = path.join(__dirname, '../../', existingBerita.header_berita)
@@ -193,7 +268,9 @@ const editBerita = async (req, res, next) => {
         //     }
         // })
 
-        await Berita.updateOne({ _id: id }, {
+        await Berita.updateOne({
+            _id: id
+        }, {
             $set: {
                 judul_berita,
                 tanggal_berita,
@@ -201,12 +278,12 @@ const editBerita = async (req, res, next) => {
                 penulis_berita,
                 link_berita,
                 header_berita: {
-                    public_id: uploadHeaderBerita.public_id,
-                    url: uploadHeaderBerita.secure_url
+                    public_id: public_id_header_berita,
+                    url: header_berita
                 },
                 gambar_berita: {
-                    public_id: uploadGambarBerita.public_id,
-                    url: uploadGambarBerita.secure_url
+                    public_id: public_id_gambar_berita,
+                    url: gambar_berita
                 },
             }
         })
@@ -226,9 +303,13 @@ const editBerita = async (req, res, next) => {
 }
 
 const deleteBerita = async (req, res, next) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     try {
-        const berita = await Berita.findOne({ _id: id })
+        const berita = await Berita.findOne({
+            _id: id
+        })
         if (!berita) {
             return res.status(400).json({
                 status: 400,
@@ -264,7 +345,9 @@ const deleteBerita = async (req, res, next) => {
         //     }
         // })
 
-        const deletedBerita = await Berita.deleteOne({ _id: id })
+        const deletedBerita = await Berita.deleteOne({
+            _id: id
+        })
         if (deletedBerita.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,
