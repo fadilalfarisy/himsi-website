@@ -27,9 +27,14 @@ const saveHimpunan = async (req, res, next) => {
                 logo_himpunan: '',
             });
         }
-
-        //updated gambar struktur only
-        if (req.files.gambar_struktur && !req.files.logo_himpunan) {
+        if (!req.files.gambar_struktur && !req.files.logo_himpunan) {
+            logo_himpunan = existingHimpunan.logo_himpunan.url
+            public_id_logo_himpunan = existingHimpunan.logo_himpunan.public_id
+            gambar_struktur = existingHimpunan.logo_himpunan.url
+            public_id_gambar_struktur = existingHimpunan.logo_himpunan.public_id
+            console.log('logo and struktur not updated')
+            //updated gambar struktur only
+        } else if (req.files.gambar_struktur && !req.files.logo_himpunan) {
             const {
                 gambar_struktur: [{
                     path: pathGambarStruktur
@@ -66,6 +71,7 @@ const saveHimpunan = async (req, res, next) => {
             gambar_struktur = existingHimpunan.logo_himpunan.url
             public_id_gambar_struktur = existingHimpunan.logo_himpunan.public_id
             console.log('update with new logo')
+
             //updated logo himpunan and gambar struktur 
         } else if (req.files.logo_himpunan && req.files.gambar_struktur) {
             const {
@@ -90,7 +96,6 @@ const saveHimpunan = async (req, res, next) => {
             public_id_logo_himpunan = uploadLogoHimpunan.public_id
             gambar_struktur = uploadGambarStruktur.secure_url
             public_id_gambar_struktur = uploadGambarStruktur.public_id
-
             console.log('update with new logo and struktur')
         }
 
