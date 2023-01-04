@@ -3,8 +3,9 @@ import mongoose from "mongoose";
 const beritaSchema = new mongoose.Schema({
     judul_berita: String,
     tanggal_berita: Date,
-    isi_berita: String,
     penulis_berita: String,
+    kategori_berita: Array,
+    isi_berita: String,
     header_berita: {
         public_id: String,
         url: String
@@ -13,6 +14,7 @@ const beritaSchema = new mongoose.Schema({
         public_id: String,
         url: String
     },
+    link_pdf: String,
     link_berita: String
 });
 

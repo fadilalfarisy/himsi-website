@@ -191,35 +191,37 @@ const deleteHimpunan = async (req, res, next) => {
             });
         }
 
-        if (himpunan.gambar_struktur || himpunan.logo_himpunan) {
-
+        if (himpunan.gambar_struktur) {
             //delete old images
             cloudinary.uploader.destroy(himpunan.gambar_struktur.public_id)
                 .then(result => console.log(result))
+        }
+        if (himpunan.logo_himpunan) {
+            //delete old images
             cloudinary.uploader.destroy(himpunan.logo_himpunan.public_id)
                 .then(result => console.log(result))
-
-            // const pathGambarStruktur = path.join(__dirname, '../../', himpunan.gambar_struktur)
-            // const pathLogoHimpunan = path.join(__dirname, '../../', himpunan.logo_himpunan)
-            // fs.unlink(pathGambarStruktur, (err) => {
-            //     if (err) {
-            //         return res.status(400).json({
-            //             status: 400,
-            //             message: 'failed',
-            //             info: 'failed to deleted himpunan'
-            //         });
-            //     }
-            // })
-            // fs.unlink(pathLogoHimpunan, (err) => {
-            //     if (err) {
-            //         return res.status(400).json({
-            //             status: 400,
-            //             message: 'failed',
-            //             info: 'failed to deleted himpunan'
-            //         });
-            //     }
-            // })
         }
+
+        // const pathGambarStruktur = path.join(__dirname, '../../', himpunan.gambar_struktur)
+        // const pathLogoHimpunan = path.join(__dirname, '../../', himpunan.logo_himpunan)
+        // fs.unlink(pathGambarStruktur, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to deleted himpunan'
+        //         });
+        //     }
+        // })
+        // fs.unlink(pathLogoHimpunan, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             status: 400,
+        //             message: 'failed',
+        //             info: 'failed to deleted himpunan'
+        //         });
+        //     }
+        // })
 
         await Himpunan.deleteOne({
             _id: id

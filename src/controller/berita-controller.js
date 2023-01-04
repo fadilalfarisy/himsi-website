@@ -9,16 +9,14 @@ const __dirname = path.dirname(__filename)
 import Berita from "../model/berita.js"
 import cloudinary from '../libs/cloudinary.js';
 
-function isEmptyObject(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object
-}
-
 const createBerita = async (req, res, next) => {
     const {
         judul_berita,
         tanggal_berita,
+        kategori_berita,
         isi_berita,
         penulis_berita,
+        link_pdf,
         link_berita
     } = req.body
     try {
@@ -44,8 +42,10 @@ const createBerita = async (req, res, next) => {
         const newBerita = await Berita.create({
             judul_berita,
             tanggal_berita,
+            kategori_berita,
             isi_berita,
             penulis_berita,
+            link_pdf,
             link_berita,
             header_berita: {
                 public_id: uploadHeaderBerita.public_id,
@@ -154,8 +154,10 @@ const editBerita = async (req, res, next) => {
     const {
         judul_berita,
         tanggal_berita,
+        kategori_berita,
         isi_berita,
         penulis_berita,
+        link_pdf,
         link_berita,
     } = req.body
 
@@ -274,8 +276,10 @@ const editBerita = async (req, res, next) => {
             $set: {
                 judul_berita,
                 tanggal_berita,
+                kategori_berita,
                 isi_berita,
                 penulis_berita,
+                link_pdf,
                 link_berita,
                 header_berita: {
                     public_id: public_id_header_berita,

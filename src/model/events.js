@@ -2,17 +2,30 @@ import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
     judul_event: String,
-    tanggal_event: Date,
-    tanggal_akhir_event: Date,
+    tanggal_mulai_event: Date,
+    tanggal_selesai_event: Date,
     status_event: {
         type: String,
-        enum: ['ongoing', 'done'],
-        default: 'ongoing'
+        enum: ['Up Coming', 'On Going', 'Done']
+    },
+    kategori_event: {
+        type: String,
+        enum: ['Eksternal HIMSI', 'Internal HIMSI']
     },
     isi_event: String,
     penulis_event: String,
-    header_event: String,
-    gambar_event: String,
+    header_event: {
+        public_id: String,
+        url: String
+    },
+    gambar_event: {
+        public_id: String,
+        url: String
+    },
+    dokumentasi_event: [{
+        public_id: String,
+        url: String
+    }],
     id_divisi: mongoose.Schema.Types.ObjectId
 });
 

@@ -1,16 +1,14 @@
-import Divisi from '../model/divisi-bidang.js'
+import Divisi from '../model/divisi.js'
 
 const createDivisi = async (req, res, next) => {
-    const { bidang,
-        singkatan,
-        deskripsi,
-        divisi } = req.body
+    const {
+        nama_divisi,
+        id_bidang
+    } = req.body
     try {
         const newDivisi = await Divisi.create({
-            bidang,
-            singkatan,
-            deskripsi,
-            divisi
+            nama_divisi,
+            id_bidang
         });
         res.status(200).json({
             status: 200,
@@ -29,7 +27,31 @@ const createDivisi = async (req, res, next) => {
 
 const getDivisi = async (req, res, next) => {
     try {
-        const divisi = await Divisi.find()
+        let {
+            bidang
+        } = req.query;
+        let query = {}
+
+        if (bidang) {
+            query = {
+                ...query,
+                $or: [{
+                    'judul_berita': {
+                        $regex: bidang,
+                        $options: "i"
+                    },
+                }, {
+                    'isi_berita': {
+                        $regex: bidang,
+                        $options: "i"
+                    },
+                }]
+            }
+        }
+
+        let divisi = await Divisi.aggregate([{
+            $match: query
+        }, ])
         res.status(200).json({
             status: 200,
             message: 'success',
@@ -46,9 +68,13 @@ const getDivisi = async (req, res, next) => {
 }
 
 const getDivisiById = async (req, res, next) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     try {
-        const divisi = await Divisi.findOne({ _id: id })
+        const divisi = await Divisi.findOne({
+            _id: id
+        })
         if (!divisi) {
             return res.status(400).json({
                 status: 400,
@@ -72,24 +98,36 @@ const getDivisiById = async (req, res, next) => {
 }
 
 const editDivisi = async (req, res, next) => {
-    const { id } = req.params
-    const { bidang,
-        singkatan,
-        deskripsi,
-        divisi } = req.body
+    const {
+        id
+    } = req.params
+    const {
+        nama_divisi,
+        id_bidang
+    } = req.body
     try {
-        const updatedDivisi = await Divisi.updateOne({ _id: id }, {
+        const divisi = await Divisi.findOne({
+            _id: id
+        })
+        if (!divisi) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'divisi not found'
+            });
+        }
+        await Divisi.updateOne({
+            _id: id
+        }, {
             $set: {
-                bidang,
-                singkatan,
-                deskripsi,
-                divisi
+                nama_divisi,
+                id_bidang
             }
         })
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: updatedDivisi
+            data: 'successfully edited divisi'
         })
     } catch (error) {
         console.log(error.message)
@@ -102,9 +140,24 @@ const editDivisi = async (req, res, next) => {
 }
 
 const deleteDivisi = async (req, res, next) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     try {
-        const deletedDivisi = await Divisi.deleteOne({ _id: id })
+        const divisi = await Divisi.findOne({
+            _id: id
+        })
+        if (!divisi) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'divisi not found'
+            });
+        }
+
+        const deletedDivisi = await Divisi.deleteOne({
+            _id: id
+        })
         if (deletedDivisi.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,
@@ -115,7 +168,7 @@ const deleteDivisi = async (req, res, next) => {
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: deletedDivisi
+            data: 'successfully deleted divisi'
         })
     } catch (error) {
         console.log(error.message)

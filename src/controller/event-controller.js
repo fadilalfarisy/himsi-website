@@ -4,50 +4,62 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 import Event from "../model/events.js"
+import cloudinary from '../libs/cloudinary.js'
 
 const createEvent = async (req, res, next) => {
     let {
         judul_event,
-        tanggal_event,
-        tanggal_akhir_event,
+        tanggal_mulai_event,
+        tanggal_selesai_event,
         status_event,
+        kategori_event,
         isi_event,
-        penulis_event, } = req.body
+        penulis_event,
+        id_divisi } = req.body
 
-    if (!tanggal_akhir_event) {
-        tanggal_akhir_event = null
+    if (!tanggal_selesai_event) {
+        tanggal_selesai_event = null
     }
-    if (!status_event) {
-        status_event = 'ongoing'
-    }
+
     try {
-        if (!req.files.header_event || !req.files.gambar_event) {
-            return res.status(400).json({
-                status: 400,
-                message: 'failed',
-                info: 'please upload image'
-            });
-        }
-        const {
-            header_event: [{ path: pathHeaderEvent }],
-            gambar_event: [{ path: pathGambarEvent }],
-        } = req.files
+        // if (!req.files.header_event || !req.files.gambar_event) {
+        //     return res.status(400).json({
+        //         status: 400,
+        //         message: 'failed',
+        //         info: 'please upload image'
+        //     });
+        // }
 
-        const newEvent = await Event.create({
-            judul_event,
-            tanggal_event,
-            tanggal_akhir_event,
-            status_event,
-            isi_event,
-            penulis_event,
-            header_event: pathHeaderEvent,
-            gambar_event: pathGambarEvent,
-        });
+        // const {
+        //     header_event: [{ path: pathHeaderEvent }],
+        //     gambar_event: [{ path: pathGambarEvent }],
+        // } = req.files
+        let pathDokumentasiEvent = []
+
+        const { dokumentasi_event } = req.files
+        for (const element of dokumentasi_event) {
+            const uploadDokumentasiEvent = await cloudinary.uploader.upload(element.path)
+            pathDokumentasiEvent.push({
+                public_id: uploadDokumentasiEvent.public_id,
+                url: uploadDokumentasiEvent.secure_url
+            })
+        }
+
+        // const newEvent = await Event.create({
+        //     judul_event,
+        //     tanggal_event,
+        //     tanggal_akhir_event,
+        //     status_event,
+        //     isi_event,
+        //     penulis_event,
+        //     header_event: pathHeaderEvent,
+        //     gambar_event: pathGambarEvent,
+        // });
 
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: newEvent
+            data: pathDokumentasiEvent
         })
 
     } catch (error) {
