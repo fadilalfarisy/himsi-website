@@ -26,7 +26,10 @@ const eventSchema = new mongoose.Schema({
         public_id: String,
         url: String
     }],
-    id_divisi: mongoose.Schema.Types.ObjectId
+    id_divisi: {
+        type: mongoose.Schema.ObjectId,
+        required: true
+    }
 });
 
 const Event = mongoose.model("Event", eventSchema);
