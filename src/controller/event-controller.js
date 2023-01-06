@@ -104,10 +104,28 @@ const createEvent = async (req, res, next) => {
 
 const getEvent = async (req, res, next) => {
     try {
-        let {
-            search
-        } = req.query;
+        let { search, bidang, kategori } = req.query;
         let query = {}
+
+        if (bidang) {
+            query = {
+                ...query,
+                'divisi.nama_divisi': {
+                    $regex: bidang,
+                    $options: "i"
+                }
+            }
+        }
+
+        if (kategori) {
+            query = {
+                ...query,
+                'kategori_event': {
+                    $regex: kategori,
+                    $options: "i"
+                }
+            }
+        }
 
         if (search) {
             query = {
@@ -126,9 +144,45 @@ const getEvent = async (req, res, next) => {
             }
         }
 
-        let event = await Event.aggregate([{
-            $match: query
-        },])
+        let event = await Event.aggregate([
+            {
+                $lookup: {
+                    from: 'divisis',
+                    localField: 'id_divisi',
+                    foreignField: '_id',
+                    as: 'divisi'
+                },
+            }, {
+                $unwind: '$divisi'
+            }, {
+                $lookup: {
+                    from: 'bidangs',
+                    localField: 'divisi.id_bidang',
+                    foreignField: '_id',
+                    as: 'bidang'
+                },
+            }, {
+                $unwind: '$bidang'
+            }, {
+                $match: query
+            }, {
+                $project: {
+                    _id: 1,
+                    judul_event: 1,
+                    tanggal_mulai_event: 1,
+                    tanggal_selesai_event: 1,
+                    status_event: 1,
+                    kategori_event: 1,
+                    isi_event: 1,
+                    penulis_event: 1,
+                    header_event: 1,
+                    gambar_event: 1,
+                    dokumentasi_event: 1,
+                    divisi: '$divisi.nama_divisi',
+                    bidang: '$bidang.nama_bidang'
+                }
+            }
+        ])
         res.status(200).json({
             status: 200,
             message: 'success',

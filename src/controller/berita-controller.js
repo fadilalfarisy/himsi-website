@@ -74,10 +74,17 @@ const createBerita = async (req, res, next) => {
 
 const getBerita = async (req, res, next) => {
     try {
-        let {
-            search
-        } = req.query;
+        let { search, kategori } = req.query;
         let query = {}
+
+        if (kategori) {
+            query = {
+                ...query,
+                'kategori_berita': {
+                    $in: [kategori]
+                }
+            }
+        }
 
         if (search) {
             query = {
@@ -98,7 +105,7 @@ const getBerita = async (req, res, next) => {
 
         let berita = await Berita.aggregate([{
             $match: query
-        }, ])
+        },])
 
         res.status(200).json({
             status: 200,

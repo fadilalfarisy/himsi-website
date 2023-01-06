@@ -59,31 +59,42 @@ const createPengurus = async (req, res, next) => {
 
 const getPengurus = async (req, res, next) => {
     try {
-        let {
-            bidang
-        } = req.query;
+        let { bidang } = req.query;
+
         let query = {}
 
         if (bidang) {
             query = {
-                ...query,
-                $or: [{
-                    'judul_berita': {
-                        $regex: bidang,
-                        $options: "i"
-                    },
-                }, {
-                    'isi_berita': {
-                        $regex: bidang,
-                        $options: "i"
-                    },
-                }]
+                'bidang.nama_bidang': {
+                    $regex: bidang,
+                    $options: "i"
+                }
             }
         }
 
-        let pengurus = await Pengurus.aggregate([{
-            $match: query
-        }, ])
+        let pengurus = await Pengurus.aggregate([
+            {
+                $lookup: {
+                    from: 'bidangs',
+                    localField: 'id_bidang',
+                    foreignField: '_id',
+                    as: 'bidang'
+                },
+            }, {
+                $unwind: '$bidang'
+            }, {
+                $match: query
+            }, {
+                $project: {
+                    _id: 1,
+                    nama_pengurus: 1,
+                    jabatan: 1,
+                    media_social: 1,
+                    foto_pengurus: 1,
+                    bidang: '$bidang.nama_bidang'
+                }
+            }
+        ])
 
         res.status(200).json({
             status: 200,

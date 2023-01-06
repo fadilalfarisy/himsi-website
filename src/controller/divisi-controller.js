@@ -1,4 +1,5 @@
 import Divisi from '../model/divisi.js'
+import Bidang from '../model/bidang.js'
 
 const createDivisi = async (req, res, next) => {
     const {
@@ -27,31 +28,39 @@ const createDivisi = async (req, res, next) => {
 
 const getDivisi = async (req, res, next) => {
     try {
-        let {
-            bidang
-        } = req.query;
+        let { bidang } = req.query;
+
         let query = {}
 
         if (bidang) {
             query = {
-                ...query,
-                $or: [{
-                    'judul_berita': {
-                        $regex: bidang,
-                        $options: "i"
-                    },
-                }, {
-                    'isi_berita': {
-                        $regex: bidang,
-                        $options: "i"
-                    },
-                }]
+                'bidang.nama_bidang': {
+                    $regex: bidang,
+                    $options: "i"
+                }
             }
         }
 
-        let divisi = await Divisi.aggregate([{
-            $match: query
-        }, ])
+        let divisi = await Divisi.aggregate([
+            {
+                $lookup: {
+                    from: 'bidangs',
+                    localField: 'id_bidang',
+                    foreignField: '_id',
+                    as: 'bidang'
+                },
+            }, {
+                $unwind: '$bidang'
+            }, {
+                $match: query
+            }, {
+                $project: {
+                    _id: 1,
+                    nama_divisi: 1,
+                    bidang: '$bidang.nama_bidang'
+                }
+            }
+        ])
         res.status(200).json({
             status: 200,
             message: 'success',
