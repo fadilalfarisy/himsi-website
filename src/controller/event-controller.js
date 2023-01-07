@@ -110,7 +110,7 @@ const getEvent = async (req, res, next) => {
         if (bidang) {
             query = {
                 ...query,
-                'divisi.nama_divisi': {
+                'bidang.nama_bidang': {
                     $regex: bidang,
                     $options: "i"
                 }

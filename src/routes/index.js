@@ -10,6 +10,7 @@ import event from "./events.js"
 import bidang from "./bidang.js"
 import divisi from './divisi.js'
 import pengurus from "./pengurus.js"
+import newsletter from "./newsletter.js"
 
 const router = express.Router()
 
@@ -24,5 +25,6 @@ router.use('/', event)
 router.use('/', bidang)
 router.use('/', divisi)
 router.use('/', pengurus)
+router.use('/', newsletter)
 
 export default router
