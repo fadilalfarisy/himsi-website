@@ -68,7 +68,7 @@ const getAllMember = async (req, res, next) => {
 }
 
 const createMember = async (req, res, next) => {
-    const { id } = req.params
+    const id = 'a8190bec4c'
     const { email } = req.body
     try {
         console.log(email)
@@ -112,7 +112,7 @@ const getSpecificMember = async (req, res, next) => {
 }
 
 const updateMember = async (req, res, next) => {
-    const { id } = req.params
+    const id = 'a8190bec4c'
     const { email } = req.body
     try {
         const member = await mailchimp.lists.updateListMember(
@@ -157,6 +157,14 @@ const deleteMember = async (req, res, next) => {
     }
 }
 
+const successSubcribed = (req, res, next) => {
+    res.status(200).json({
+        status: 200,
+        message: "success",
+        info: 'successfully subcribed HIMSI News Letter'
+    })
+}
+
 const newsLetter = {
     getAllAudience,
     getSpecificAudience,
@@ -164,7 +172,8 @@ const newsLetter = {
     createMember,
     getSpecificMember,
     updateMember,
-    deleteMember
+    deleteMember,
+    successSubcribed
 }
 
 export default newsLetter
