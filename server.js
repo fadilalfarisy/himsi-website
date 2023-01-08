@@ -14,8 +14,7 @@ const __dirname = path.dirname(__filename)
 const { PORT, MONGO_URI } = config
 
 try {
-    mongoose.Promise = global.Promise;
-    mongoose.connect(MONGO_URI, { useNewUrlParser: true })
+    await mongoose.connect(MONGO_URI, { useNewUrlParser: true })
     console.log('connect to db')
 } catch (error) {
     console.log(error.message)
