@@ -30,7 +30,7 @@ const getAllAudience = async (req, res, next) => {
 }
 
 const getSpecificAudience = async (req, res, next) => {
-    const { id } = req.params
+    const id = 'a8190bec4c'
     try {
         const audience = await mailchimp.lists.getList(id);
         res.status(200).json({
@@ -49,13 +49,33 @@ const getSpecificAudience = async (req, res, next) => {
 }
 
 const getAllMember = async (req, res, next) => {
-    const { id } = req.params
+    const id = 'a8190bec4c'
     try {
         const allMember = await mailchimp.lists.getListMembersInfo(id);
         res.status(200).json({
             status: 200,
             message: "success",
             data: allMember.members,
+        })
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            status: 500,
+            message: "failed",
+            info: "server error",
+        });
+    }
+}
+
+const getSpecificMember = async (req, res, next) => {
+    const { id } = req.params
+    const { email } = req.body
+    try {
+        const member = await mailchimp.lists.getListMember(id, md5(email.toLowerCase()));
+        res.status(200).json({
+            status: 200,
+            message: "success",
+            data: member,
         })
     } catch (error) {
         console.log(error.message);
@@ -91,26 +111,6 @@ const createMember = async (req, res, next) => {
     }
 }
 
-const getSpecificMember = async (req, res, next) => {
-    const { id } = req.params
-    const { email } = req.body
-    try {
-        const member = await mailchimp.lists.getListMember(id, md5(email.toLowerCase()));
-        res.status(200).json({
-            status: 200,
-            message: "success",
-            data: member,
-        })
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            status: 500,
-            message: "failed",
-            info: "server error",
-        });
-    }
-}
-
 const updateMember = async (req, res, next) => {
     const id = 'a8190bec4c'
     const { email } = req.body
@@ -138,10 +138,16 @@ const updateMember = async (req, res, next) => {
 }
 
 const deleteMember = async (req, res, next) => {
-    const { id } = req.params
+    const id = 'a8190bec4c'
     const { email } = req.body
     try {
-        const member = await mailchimp.lists.deleteListMember(id, md5(email.toLowerCase()));
+        const member = await mailchimp.lists.updateListMember(
+            id,
+            md5(email.toLowerCase()),
+            {
+                status: "unsubscribed"
+            }
+        );
         res.status(200).json({
             status: 200,
             message: "success",
