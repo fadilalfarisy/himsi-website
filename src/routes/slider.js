@@ -5,12 +5,12 @@ import sliderController from '../controller/slider-controller.js'
 //config images storage
 const filestorage = multer.diskStorage({
     //path images storage
-    destination: (req, file, cb) => {
-        cb(null, './public/images')
-    },
+    // destination: (req, file, cb) => {
+    //     cb(null, './public/images')
+    // },
     //named the image file
     filename: (req, file, cb) => {
-        cb(null, file.originalname.trim())
+        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
     }
 })
 
@@ -32,8 +32,8 @@ const sliderInformation = express.Router()
 
 sliderInformation.get('/slider', sliderController.getSlider)
 sliderInformation.get('/slider/:id', sliderController.getSliderById)
-sliderInformation.post('/slider', upload.single('image'), sliderController.createSlider)
-sliderInformation.put('/slider/:id', upload.single('image'), sliderController.editSlider)
+sliderInformation.post('/slider', upload.single('gambar_slider'), sliderController.createSlider)
+sliderInformation.put('/slider/:id', upload.single('gambar_slider'), sliderController.editSlider)
 sliderInformation.delete('/slider/:id', sliderController.deleteSlider)
 
 export default sliderInformation

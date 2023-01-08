@@ -5,12 +5,12 @@ import partnerController from '../controller/partner-controller.js'
 //config images storage
 const filestorage = multer.diskStorage({
     //path images storage
-    destination: (req, file, cb) => {
-        cb(null, './public/images')
-    },
+    // destination: (req, file, cb) => {
+    //     cb(null, './public/images')
+    // },
     //named the image file
     filename: (req, file, cb) => {
-        cb(null, file.originalname.trim())
+        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
     }
 })
 
@@ -32,8 +32,8 @@ const partner = express.Router()
 
 partner.get('/partner', partnerController.getPartner)
 partner.get('/partner/:id', partnerController.getPartnerById)
-partner.post('/partner', upload.single('image'), partnerController.createPartner)
-partner.put('/partner/:id', upload.single('image'), partnerController.editPartner)
+partner.post('/partner', upload.single('logo_partner'), partnerController.createPartner)
+partner.put('/partner/:id', upload.single('logo_partner'), partnerController.editPartner)
 partner.delete('/partner/:id', partnerController.deletePartner)
 
 export default partner

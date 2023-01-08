@@ -3,7 +3,6 @@ import admin from './admin.js'
 import token from './token.js'
 import visiMisi from './visi-misi.js'
 import faq from './faq.js'
-import hubungi from './hubungi.js'
 import berita from './berita.js'
 import link from './link.js'
 import himpunan from "./himpunan.js"
@@ -14,6 +13,8 @@ import pengurus from "./pengurus.js"
 import newsletter from "./newsletter.js"
 import partner from "./partner.js"
 import sliderInformation from "./slider.js"
+import footer from './footer.js'
+import dashboard from "./dashboard.js"
 
 const router = express.Router()
 
@@ -22,7 +23,6 @@ router.use('/', token)
 router.use('/', himpunan)
 router.use('/', visiMisi)
 router.use('/', faq)
-router.use('/', hubungi)
 router.use('/', berita)
 router.use('/', link)
 router.use('/', event)
@@ -32,5 +32,7 @@ router.use('/', pengurus)
 router.use('/', newsletter)
 router.use('/', partner)
 router.use('/', sliderInformation)
+router.use('/', footer)
+router.use('/', dashboard)
 
 export default router
