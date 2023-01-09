@@ -104,7 +104,7 @@ const createEvent = async (req, res, next) => {
 
 const getEvent = async (req, res, next) => {
     try {
-        let { search, bidang, kategori } = req.query;
+        let { search, bidang, kategori, status, judul } = req.query;
         let query = {}
 
         if (bidang) {
@@ -122,6 +122,26 @@ const getEvent = async (req, res, next) => {
                 ...query,
                 'kategori_event': {
                     $regex: kategori,
+                    $options: "i"
+                }
+            }
+        }
+
+        if (status) {
+            query = {
+                ...query,
+                'status_event': {
+                    $regex: status,
+                    $options: "i"
+                }
+            }
+        }
+
+        if (judul) {
+            query = {
+                ...query,
+                'judul_event': {
+                    $regex: judul,
                     $options: "i"
                 }
             }

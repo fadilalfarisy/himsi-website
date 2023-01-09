@@ -74,7 +74,7 @@ const createBerita = async (req, res, next) => {
 
 const getBerita = async (req, res, next) => {
     try {
-        let { search, kategori } = req.query;
+        let { search, kategori, judul } = req.query;
         let query = {}
 
         if (kategori) {
@@ -82,6 +82,16 @@ const getBerita = async (req, res, next) => {
                 ...query,
                 'kategori_berita': {
                     $in: [kategori]
+                }
+            }
+        }
+
+        if (judul) {
+            query = {
+                ...query,
+                'judul_berita': {
+                    $regex: judul,
+                    $options: "i"
                 }
             }
         }
