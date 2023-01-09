@@ -74,8 +74,22 @@ const createBerita = async (req, res, next) => {
 
 const getBerita = async (req, res, next) => {
     try {
-        let { search, kategori, judul } = req.query;
+        let { search, kategori, judul, skip, limit, page } = req.query;
         let query = {}
+
+        //pagination
+        let querySkip = 0
+        let queryLimit = 8
+        let queryPage = 1
+        if (skip) {
+            querySkip = Number(skip)
+        }
+        if (limit) {
+            queryLimit = Number(limit)
+        }
+        if (page) {
+            queryPage = Number(page)
+        }
 
         if (kategori) {
             query = {
@@ -113,9 +127,32 @@ const getBerita = async (req, res, next) => {
             }
         }
 
-        let berita = await Berita.aggregate([{
-            $match: query
-        },])
+        let berita = await Berita.aggregate([
+            {
+                $match: query
+            }, {
+                $facet: {
+                    pagination: [{
+                        $count: "total"
+                    }, {
+                        $addFields: { page: queryPage }
+                    }],
+                    berita: [{
+                        $skip: (queryPage - 1) * querySkip
+                    }, {
+                        $limit: queryLimit
+                    }],
+                },
+            }, {
+                $unwind: '$pagination'
+            }, {
+                $project: {
+                    total: '$pagination.total',
+                    page: '$pagination.page',
+                    berita: '$berita'
+                }
+            }
+        ])
 
         res.status(200).json({
             status: 200,

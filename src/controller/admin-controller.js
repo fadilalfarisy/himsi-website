@@ -21,11 +21,8 @@ const register = async (req, res, next) => {
         });
 
         let role = 'super admin'
-        const accessToken = createAccessToken({
-            id: newAdmin._id,
-            role: role
-        });
-        const refreshToken = createRefreshToken(newAdmin._id)
+        const accessToken = createAccessToken(newAdmin._id, role);
+        const refreshToken = createRefreshToken(newAdmin._id, role)
 
         //send cookie token
         res.cookie("refreshToken", refreshToken, {
@@ -76,11 +73,8 @@ const login = async (req, res) => {
             });
         }
 
-        const accessToken = createAccessToken({
-            id: admin._id,
-            role: admin.role
-        });
-        const refreshToken = createRefreshToken(admin._id);
+        const accessToken = createAccessToken(admin._id, admin.role);
+        const refreshToken = createRefreshToken(admin._id, admin.role);
 
         //send cookie token
         res.cookie("refreshToken", refreshToken, {
@@ -107,6 +101,24 @@ const login = async (req, res) => {
         });
     }
 };
+
+const logout = async (req, res, next) => {
+    try {
+        res.clearCookie('refreshToken', { path: '/' })
+        res.status(200).json({
+            status: 200,
+            message: 'success',
+            info: 'successfully logout'
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
 
 const createAdmin = async (req, res, next) => {
     const {
@@ -190,10 +202,14 @@ const editAdmin = async (req, res, next) => {
         role
     } = req.body
     try {
-        const updatedAdmin = await Admin.updateOne({ _id: id }, {
+
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(password, salt);
+
+        await Admin.updateOne({ _id: id }, {
             $set: {
                 username,
-                password,
+                password: hashPassword,
                 nama_admin,
                 role
             }
@@ -241,6 +257,7 @@ const deleteAdmin = async (req, res, next) => {
 
 const adminController = {
     login,
+    logout,
     register,
     getAdmin,
     getAdminById,

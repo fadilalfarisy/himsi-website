@@ -19,10 +19,11 @@ const checkRefreshToken = async (req, res, next) => {
                     info: 'forbidden'
                 });
             }
-            const accessToken = createAccessToken({ id: decoded.id, role: decoded.role })
+            const accessToken = createAccessToken(decoded.id, decoded.role)
             res.status(200).json({
                 status: 200,
                 message: 'success',
+                role: decoded.role,
                 accessToken: accessToken
             });
         })

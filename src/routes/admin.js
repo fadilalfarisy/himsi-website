@@ -6,6 +6,7 @@ import adminController from '../controller/admin-controller.js'
 const admin = express.Router()
 
 admin.post('/login', adminController.login)
+admin.get('/logout', adminController.logout)
 admin.post('/register', adminController.register)
 
 admin.get('/admin', adminController.getAdmin)

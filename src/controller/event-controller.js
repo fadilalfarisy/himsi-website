@@ -104,8 +104,22 @@ const createEvent = async (req, res, next) => {
 
 const getEvent = async (req, res, next) => {
     try {
-        let { search, bidang, kategori, status, judul } = req.query;
+        let { search, bidang, kategori, status, judul, skip, limit, page } = req.query;
         let query = {}
+
+        //pagination
+        let querySkip = 0
+        let queryLimit = 8
+        let queryPage = 1
+        if (skip) {
+            querySkip = Number(skip)
+        }
+        if (limit) {
+            queryLimit = Number(limit)
+        }
+        if (page) {
+            queryPage = Number(page)
+        }
 
         if (bidang) {
             query = {
@@ -186,20 +200,41 @@ const getEvent = async (req, res, next) => {
             }, {
                 $match: query
             }, {
+                $facet: {
+                    pagination: [{
+                        $count: "total"
+                    }, {
+                        $addFields: { page: queryPage }
+                    }],
+                    event: [{
+                        $skip: (queryPage - 1) * querySkip
+                    }, {
+                        $limit: queryLimit
+                    }, {
+                        $project: {
+                            _id: 1,
+                            judul_event: 1,
+                            tanggal_mulai_event: 1,
+                            tanggal_selesai_event: 1,
+                            status_event: 1,
+                            kategori_event: 1,
+                            isi_event: 1,
+                            penulis_event: 1,
+                            header_event: 1,
+                            gambar_event: 1,
+                            dokumentasi_event: 1,
+                            divisi: '$divisi.nama_divisi',
+                            bidang: '$bidang.nama_bidang',
+                        }
+                    }],
+                },
+            }, {
+                $unwind: '$pagination'
+            }, {
                 $project: {
-                    _id: 1,
-                    judul_event: 1,
-                    tanggal_mulai_event: 1,
-                    tanggal_selesai_event: 1,
-                    status_event: 1,
-                    kategori_event: 1,
-                    isi_event: 1,
-                    penulis_event: 1,
-                    header_event: 1,
-                    gambar_event: 1,
-                    dokumentasi_event: 1,
-                    divisi: '$divisi.nama_divisi',
-                    bidang: '$bidang.nama_bidang'
+                    total: '$pagination.total',
+                    page: '$pagination.page',
+                    event: '$event'
                 }
             }
         ])
