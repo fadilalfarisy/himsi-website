@@ -27,7 +27,7 @@ const register = async (req, res, next) => {
 
         //send cookie with contain refresh token
         res.cookie("refreshToken", refreshToken, {
-            expires: new Date(Date.now() + 1000 * 60 * 15), //15m
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //1d
             httpOnly: true,
             secure: true,
             sameSite: "none"
@@ -83,7 +83,7 @@ const login = async (req, res) => {
 
         //send cookie with contain refresh token 
         res.cookie("refreshToken", refreshToken, {
-            expires: new Date(Date.now() + 1000 * 60 * 15), //15m
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //1d
             httpOnly: true,
             secure: true,
             sameSite: "none"
