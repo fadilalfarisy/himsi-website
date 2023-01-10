@@ -14,17 +14,18 @@ const register = async (req, res, next) => {
                 info: 'username was used'
             });
         }
-        //save new admin
         const newAdmin = await Admin.create({
             username,
             password
         });
 
+        //default value role when admin register
         let role = 'super admin'
+        //create access token and refresh token
         const accessToken = createAccessToken(newAdmin._id, role);
         const refreshToken = createRefreshToken(newAdmin._id, role)
 
-        //send cookie token
+        //send cookie with contain refresh token
         res.cookie("refreshToken", refreshToken, {
             expires: new Date(Date.now() + 1000 * 60 * 15), //15m
             httpOnly: true,
@@ -54,7 +55,9 @@ const login = async (req, res) => {
     const { username, password } = req.body;
     try {
         //check username is exist
-        const admin = await Admin.findOne({ username });
+        const admin = await Admin.findOne({ username })
+
+        //when username admin is not found
         if (!admin) {
             return res.status(400).json({
                 status: 400,
@@ -65,6 +68,7 @@ const login = async (req, res) => {
 
         //compare the password
         const hashPassword = await bcrypt.compare(password.toString(), admin.password)
+        //when password is not match
         if (!hashPassword) {
             return res.status(400).json({
                 status: 400,
@@ -73,10 +77,11 @@ const login = async (req, res) => {
             });
         }
 
+        //create access token and refresh token
         const accessToken = createAccessToken(admin._id, admin.role);
         const refreshToken = createRefreshToken(admin._id, admin.role);
 
-        //send cookie token
+        //send cookie with contain refresh token 
         res.cookie("refreshToken", refreshToken, {
             expires: new Date(Date.now() + 1000 * 60 * 15), //15m
             httpOnly: true,
@@ -104,6 +109,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res, next) => {
     try {
+        //clear cookie refresh token
         res.clearCookie('refreshToken', { path: '/' })
         res.status(200).json({
             status: 200,
@@ -171,6 +177,7 @@ const getAdminById = async (req, res, next) => {
     const { id } = req.params
     try {
         const admin = await Admin.findOne({ _id: id })
+        //when id admin is not found
         if (!admin) {
             return res.status(400).json({
                 status: 400,
@@ -202,7 +209,7 @@ const editAdmin = async (req, res, next) => {
         role
     } = req.body
     try {
-
+        //hash the admin password
         const salt = await bcrypt.genSalt();
         const hashPassword = await bcrypt.hash(password, salt);
 
@@ -233,6 +240,7 @@ const deleteAdmin = async (req, res, next) => {
     const { id } = req.params
     try {
         const deletedAdmin = await Admin.deleteOne({ _id: id })
+        //when no one admin is deleted
         if (deletedAdmin.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

@@ -1,10 +1,7 @@
 import fs from 'fs';
 import path from 'path'
-import {
-    fileURLToPath
-} from 'url'
-const __filename = fileURLToPath(
-    import.meta.url)
+import { fileURLToPath } from 'url'
+const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 import Bidang from "../model/bidang.js"
 import cloudinary from '../libs/cloudinary.js'
@@ -16,6 +13,7 @@ const createBidang = async (req, res, next) => {
         deskripsi_bidang
     } = req.body
     try {
+        //when logo bidang is not sent
         if (!req.file) {
             return res.status(400).json({
                 status: 400,
@@ -24,10 +22,9 @@ const createBidang = async (req, res, next) => {
             });
         }
 
-        const {
-            path: pathLogoBidang
-        } = req.file
+        const { path: pathLogoBidang } = req.file
 
+        //upload logo bidang
         const uploadLogoBidang = await cloudinary.uploader.upload(pathLogoBidang)
 
         const newBidang = await Bidang.create({
@@ -58,7 +55,6 @@ const createBidang = async (req, res, next) => {
 const getBidang = async (req, res, next) => {
     try {
         let bidang = await Bidang.find()
-
         res.status(200).json({
             status: 200,
             message: 'success',
@@ -76,13 +72,10 @@ const getBidang = async (req, res, next) => {
 }
 
 const getBidangById = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
-        const bidang = await Bidang.findOne({
-            _id: id
-        })
+        const bidang = await Bidang.findOne({ _id: id })
+        //when id bidang is not found
         if (!bidang) {
             return res.status(400).json({
                 status: 400,
@@ -107,9 +100,7 @@ const getBidangById = async (req, res, next) => {
 
 
 const editBidang = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     const {
         nama_bidang,
         kepanjangan_bidang,
@@ -119,10 +110,8 @@ const editBidang = async (req, res, next) => {
     let logo_bidang, public_id_logo_bidang = ''
 
     try {
-
-        const existingBidang = await Bidang.findOne({
-            _id: id
-        })
+        const existingBidang = await Bidang.findOne({ _id: id })
+        //when id bidang is not found
         if (!existingBidang) {
             return res.status(400).json({
                 status: 400,
@@ -133,52 +122,30 @@ const editBidang = async (req, res, next) => {
 
         //when logo bidang not updated
         if (!req.file) {
+            //set value logo bidang with old image
             logo_bidang = existingBidang.logo_bidang.url
             public_id_logo_bidang = existingBidang.logo_bidang.public_id
-            console.log('without update logo bidang')
-            //when logo bidang is updated
-        } else {
-            const {
-                path: pathLogoBidang
-            } = req.file
+        }
+
+        //when logo bidang is updated
+        if (req.file) {
+            const { path: pathLogoBidang } = req.file
 
             //delete old images
             cloudinary.uploader.destroy(existingBidang.logo_bidang.public_id)
                 .then(result => console.log(result))
+            // const pathLogoBidang = path.join(__dirname, '../../', existingBidang.logo_bidang)
+            // fs.unlink(pathLogoBidang, (err) =>  console.log(err))
+
             //save new images
             const uploadLogoBidang = await cloudinary.uploader.upload(pathLogoBidang)
 
+            //set value logo bidang with new image
             logo_bidang = uploadLogoBidang.secure_url
             public_id_logo_bidang = uploadLogoBidang.public_id
-            console.log('update logo bidang')
         }
 
-
-        // const oldpathGambarBerita = path.join(__dirname, '../../', existingBerita.gambar_berita)
-        // const oldpathHeaderBerita = path.join(__dirname, '../../', existingBerita.header_berita)
-
-        // fs.unlink(oldpathGambarBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit berita'
-        //         });
-        //     }
-        // })
-        // fs.unlink(oldpathHeaderBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit berita'
-        //         });
-        //     }
-        // })
-
-        await Bidang.updateOne({
-            _id: id
-        }, {
+        await Bidang.updateOne({ _id: id }, {
             $set: {
                 nama_bidang,
                 kepanjangan_bidang,
@@ -205,13 +172,10 @@ const editBidang = async (req, res, next) => {
 }
 
 const deleteBidang = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
-        const bidang = await Bidang.findOne({
-            _id: id
-        })
+        const bidang = await Bidang.findOne({ _id: id })
+        //when id bidang is not found
         if (!bidang) {
             return res.status(400).json({
                 status: 400,
@@ -224,30 +188,11 @@ const deleteBidang = async (req, res, next) => {
         cloudinary.uploader.destroy(bidang.logo_bidang.public_id)
             .then(result => console.log(result))
 
-        // const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
-        // const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
-        // fs.unlink(pathHeaderBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to delete berita'
-        //         });
-        //     }
-        // })
-        // fs.unlink(pathGambarBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit berita'
-        //         });
-        //     }
-        // })
+        // const pathLogoBidang = path.join(__dirname, '../../', bidang.logo_bidang)
+        // fs.unlink(pathLogoBidang, (err) =>  console.log(err))
 
-        const deletedBidang = await Bidang.deleteOne({
-            _id: id
-        })
+        const deletedBidang = await Bidang.deleteOne({ _id: id })
+        //when no one bidang is deleted
         if (deletedBidang.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

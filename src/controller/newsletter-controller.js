@@ -91,7 +91,6 @@ const createMember = async (req, res, next) => {
     const id = 'a8190bec4c'
     const { email } = req.body
     try {
-        console.log(email)
         const newMember = await mailchimp.lists.addListMember(id, {
             email_address: email,
             status: 'pending'

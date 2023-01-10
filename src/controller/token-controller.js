@@ -3,6 +3,7 @@ import { createAccessToken, verifyRefreshToken } from '../libs/jwt.js';
 const checkRefreshToken = async (req, res, next) => {
     try {
         const { refreshToken } = req.cookies
+        //when admin not sent cookie refresh token
         if (!refreshToken) {
             return res.status(400).json({
                 status: 400,
@@ -27,7 +28,6 @@ const checkRefreshToken = async (req, res, next) => {
                 accessToken: accessToken
             });
         })
-
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({

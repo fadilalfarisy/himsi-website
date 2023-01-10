@@ -9,6 +9,7 @@ import cloudinary from '../libs/cloudinary.js'
 const createSlider = async (req, res, next) => {
     const { judul_slider } = req.body
     try {
+        //when gambar slider is not sent
         if (!req.file) {
             return res.status(400).json({
                 status: 400,
@@ -16,8 +17,8 @@ const createSlider = async (req, res, next) => {
                 info: 'please upload image'
             });
         }
-        const pathSlider = req.file.path
 
+        const { path: pathSlider } = req.file
         const updloadGambarSlider = await cloudinary.uploader.upload(pathSlider)
 
         const newSlider = await Slider.create({
@@ -64,6 +65,7 @@ const getSliderById = async (req, res, next) => {
     const { id } = req.params
     try {
         const slider = await Slider.findOne({ _id: id })
+        //when id slider is not found
         if (!slider) {
             return res.status(400).json({
                 status: 400,
@@ -90,9 +92,12 @@ const getSliderById = async (req, res, next) => {
 const editSlider = async (req, res, next) => {
     const { id } = req.params
     const { judul_slider } = req.body
+
     let gambar_slider, public_id_gambar_slider = ''
+
     try {
         const existingSlider = await Slider.findOne({ _id: id })
+        //when id slider is not found
         if (!existingSlider) {
             return res.status(400).json({
                 status: 400,
@@ -105,26 +110,23 @@ const editSlider = async (req, res, next) => {
         if (!req.file) {
             gambar_slider = existingSlider.gambar_slider.url
             public_id_gambar_slider = existingSlider.gambar_slider.public_id
-            console.log('without update gambar slider')
-            //when gambar slider is updated
-        } else {
-            const {
-                path: pathSlider
-            } = req.file
+        }
+        //when gambar slider is updated
+        if (req.file) {
+            const { path: pathSlider } = req.file
 
             //delete old images
             cloudinary.uploader.destroy(existingSlider.gambar_slider.public_id)
                 .then(result => console.log(result))
+            // const oldPathGambarSlider = path.join(__dirname, '../../', existingSlider.gambar_slider)
+            // fs.unlink(oldPathGambarSlider, (err) => { console.log(err) })
+
             //save new images
             const uploadGambarSlider = await cloudinary.uploader.upload(pathSlider)
 
             gambar_slider = uploadGambarSlider.secure_url
             public_id_gambar_slider = uploadGambarSlider.public_id
-            console.log('updated gambar slider')
         }
-
-        // const imagePath = path.join(__dirname, '../../', existingSlider.gambar)
-        // fs.unlink(imagePath, (err) => { console.log(err) })
 
         await Slider.updateOne({ _id: id }, {
             $set: {
@@ -154,6 +156,7 @@ const deleteSlider = async (req, res, next) => {
     const { id } = req.params
     try {
         const slider = await Slider.findOne({ _id: id })
+        //when slider is not found
         if (!slider) {
             return res.status(400).json({
                 status: 400,
@@ -161,12 +164,15 @@ const deleteSlider = async (req, res, next) => {
                 info: 'slider not found'
             });
         }
-        // const imagePath = path.join(__dirname, '../../', slider.gambar)
-        // fs.unlink(imagePath, (err) => { console.log(err) })
+
+        //deleted image
         cloudinary.uploader.destroy(slider.gambar_slider.public_id)
             .then(result => console.log(result))
+        // const oldPathGambarSlider = path.join(__dirname, '../../', slider.gambar_slider)
+        // fs.unlink(oldPathGambarSlider, (err) => { console.log(err) })
 
         const deletedSlider = await Slider.deleteOne({ _id: id })
+        //when no one slider is deleted
         if (deletedSlider.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

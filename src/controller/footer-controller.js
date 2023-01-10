@@ -49,6 +49,7 @@ const getFooterById = async (req, res, next) => {
     const { id } = req.params
     try {
         const footer = await Footer.findOne({ _id: id })
+        //when id footer is not found
         if (!footer) {
             return res.status(400).json({
                 status: 400,
@@ -78,6 +79,16 @@ const editFooter = async (req, res, next) => {
         email,
         website } = req.body
     try {
+        const footer = await Footer.findOne({ _id: id })
+        //when id footer is not found
+        if (!footer) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'footer not found'
+            });
+        }
+
         await Footer.updateOne({ _id: id }, {
             $set: {
                 alamat,
@@ -103,7 +114,18 @@ const editFooter = async (req, res, next) => {
 const deleteFooter = async (req, res, next) => {
     const { id } = req.params
     try {
+        const footer = await Footer.findOne({ _id: id })
+        //when id footer is not found
+        if (!footer) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'footer not found'
+            });
+        }
+
         const deletedFooter = await Footer.deleteOne({ _id: id })
+        //when no one footer is deleted
         if (deletedFooter.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

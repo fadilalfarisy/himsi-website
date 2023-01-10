@@ -11,6 +11,7 @@ const saveVisi = async (req, res, next) => {
         misi } = req.body
     try {
         const existingHimpunan = await Himpunan.findOne()
+        //when himpunan not already define
         if (!existingHimpunan) {
             await Himpunan.create({
                 nama_himpunan: '',

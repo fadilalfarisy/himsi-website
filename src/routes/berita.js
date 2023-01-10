@@ -1,5 +1,6 @@
 import express from "express"
 import multer from "multer"
+import auth from '../middleware/auth-user.js'
 import beritaController from '../controller/berita-controller.js'
 
 //config images storage
@@ -10,7 +11,7 @@ const filestorage = multer.diskStorage({
     // },
     //named the image file
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
+        cb(null, Date.now() + file.originalname)
     }
 })
 
@@ -32,14 +33,14 @@ const berita = express.Router()
 
 berita.get('/berita/', beritaController.getBerita)
 berita.get('/berita/:id', beritaController.getBeritaById)
-berita.post('/berita', upload.fields([
+berita.post('/berita', auth, upload.fields([
     { name: 'header_berita', maxCount: 1 },
     { name: 'gambar_berita', maxCount: 1 }
 ]), beritaController.createBerita)
-berita.put('/berita/:id', upload.fields([
+berita.put('/berita/:id', auth, upload.fields([
     { name: 'header_berita', maxCount: 1 },
     { name: 'gambar_berita', maxCount: 1 }
 ]), beritaController.editBerita)
-berita.delete('/berita/:id', beritaController.deleteBerita)
+berita.delete('/berita/:id', auth, beritaController.deleteBerita)
 
 export default berita

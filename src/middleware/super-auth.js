@@ -27,7 +27,6 @@ const superAuth = (req, res, next) => {
                     info: 'your not super admin'
                 });
             }
-            console.log(decoded.role)
             req.token = decoded
             next()
         })

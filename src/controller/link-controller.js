@@ -2,14 +2,22 @@ import Link from "../model/link.js";
 
 const getLink = async (req, res, next) => {
     try {
-        let match = {};
+        const { kategori } = req.query
+        let query = {};
+
         // filter by kategori
-        if (req.query.kategori) {
-            match.kategori = req.query.kategori;
+        if (kategori) {
+            query = {
+                ...query,
+                'kategori': {
+                    $regex: kategori,
+                    $options: "i"
+                }
+            }
         }
         let response = await Link.aggregate([{
-            $match: match
-        },])
+            $match: query
+        }])
         res.status(200).json({
             status: 200,
             message: "success",
@@ -26,13 +34,10 @@ const getLink = async (req, res, next) => {
 };
 
 const getLinkById = async (req, res, next) => {
-    const {
-        id
-    } = req.params;
+    const { id } = req.params;
     try {
-        const link = await Link.findOne({
-            _id: id
-        });
+        const link = await Link.findOne({ _id: id });
+        //when id link is not found
         if (!link) {
             return res.status(400).json({
                 status: 400,
@@ -83,18 +88,24 @@ const createLink = async (req, res, next) => {
 };
 
 const editLink = async (req, res, next) => {
-    const {
-        id
-    } = req.params;
+    const { id } = req.params;
     const {
         nama_link,
         url,
         kategori
     } = req.body;
     try {
-        const updatedLink = await Link.updateOne({
-            _id: id
-        }, {
+        const link = await Link.findOne({ _id: id });
+        //when id link is not found
+        if (!link) {
+            return res.status(400).json({
+                status: 400,
+                message: "failed",
+                info: "link not found",
+            });
+        }
+
+        await Link.updateOne({ _id: id }, {
             $set: {
                 nama_link,
                 url,
@@ -117,13 +128,10 @@ const editLink = async (req, res, next) => {
 };
 
 const deleteLink = async (req, res, next) => {
-    const {
-        id
-    } = req.params;
+    const { id } = req.params;
     try {
-        const deletedLink = await Link.deleteOne({
-            _id: id
-        });
+        const deletedLink = await Link.deleteOne({ _id: id });
+        //when no one link is deleted
         if (deletedLink.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

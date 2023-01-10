@@ -28,6 +28,7 @@ const getPartnerById = async (req, res, next) => {
     const { id } = req.params;
     try {
         const partner = await Partner.findOne({ _id: id });
+        //when id partner is not found
         if (!partner) {
             return res.status(400).json({
                 status: 400,
@@ -53,6 +54,7 @@ const getPartnerById = async (req, res, next) => {
 const createPartner = async (req, res, next) => {
     const { nama_partner } = req.body;
     try {
+        //when logo partner is not sent
         if (!req.file) {
             return res.status(400).json({
                 status: 400,
@@ -60,7 +62,8 @@ const createPartner = async (req, res, next) => {
                 info: "please upload partner logo image",
             });
         }
-        const pathLogoPartner = req.file.path;
+
+        const { path: pathLogoPartner } = req.file
         const uploadLogoPartner = await cloudinary.uploader.upload(pathLogoPartner)
 
         const newPartner = await Partner.create({
@@ -90,9 +93,8 @@ const editPartner = async (req, res, next) => {
     const { nama_partner } = req.body
     let logo_partner, public_id_logo_partner = ''
     try {
-        const existingPartner = await Partner.findOne({
-            _id: id
-        })
+        const existingPartner = await Partner.findOne({ _id: id })
+        //when id partner is not found
         if (!existingPartner) {
             return res.status(400).json({
                 status: 400,
@@ -106,25 +108,24 @@ const editPartner = async (req, res, next) => {
             logo_partner = existingPartner.logo_partner.url
             public_id_logo_partner = existingPartner.logo_partner.public_id
             console.log('without update logo partner')
-            //when logo partner is updated
-        } else {
-            const {
-                path: pathLogoPartner
-            } = req.file
+
+        }
+        //when logo partner is updated
+        if (req.file) {
+            const { path: pathLogoPartner } = req.file
 
             //delete old images
-            cloudinary.uploader.destroy(existingPartner.logo_partnero.public_id)
+            cloudinary.uploader.destroy(existingPartner.logo_partner.public_id)
                 .then(result => console.log(result))
+            // const oldPathLogoPartner = path.join(__dirname, '../../', existingPartner.logo_partner)
+            // fs.unlink(oldPathLogoPartner, (err) => { console.log(err) })
+
             //save new images
             const uploadLogoPartner = await cloudinary.uploader.upload(pathLogoPartner)
 
             logo_partner = uploadLogoPartner.secure_url
             public_id_logo_partner = uploadLogoPartner.public_id
-            console.log('updated logo partner')
         }
-
-        // const imagePath = path.join(__dirname, '../../', existingPartner.logo)
-        // fs.unlink(imagePath, (err) => { console.log(err) })
 
         await Partner.updateOne({ _id: id }, {
             $set: {
@@ -154,6 +155,7 @@ const deletePartner = async (req, res, next) => {
     const { id } = req.params
     try {
         const partner = await Partner.findOne({ _id: id })
+        //when id partner is not found
         if (!partner) {
             return res.status(400).json({
                 status: 400,
@@ -165,16 +167,15 @@ const deletePartner = async (req, res, next) => {
         //delete image
         cloudinary.uploader.destroy(partner.logo_partner.public_id)
             .then(result => console.log(result))
-
-        // const imagePath = path.join(__dirname, '../../', partner.logo)
-        // fs.unlink(imagePath, (err) => { console.log(err) })
+        // const oldPathLogoPatrtner = path.join(__dirname, '../../', partner.logo)
+        // fs.unlink(oldPathLogoPatrtner, (err) => { console.log(err) })
 
         const deletedPartner = await Partner.deleteOne({ _id: id })
         if (deletedPartner.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
-                info: 'partner data not found'
+                info: 'partner not found'
             });
         }
         res.status(200).json({

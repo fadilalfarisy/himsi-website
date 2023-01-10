@@ -1,5 +1,6 @@
 import express from "express"
 import multer from "multer"
+import auth from '../middleware/auth-user.js'
 import eventController from '../controller/event-controller.js'
 
 //config images storage
@@ -10,7 +11,7 @@ const filestorage = multer.diskStorage({
     // },
     //named the image file
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
+        cb(null, Date.now() + file.originalname)
     }
 })
 
@@ -32,16 +33,16 @@ const event = express.Router()
 
 event.get('/event/', eventController.getEvent)
 event.get('/event/:id', eventController.getEventById)
-event.post('/event', upload.fields([
+event.post('/event', auth, upload.fields([
     { name: 'header_event', maxCount: 1 },
     { name: 'gambar_event', maxCount: 1 },
     { name: 'dokumentasi_event' }
 ]), eventController.createEvent)
-event.put('/event/:id', upload.fields([
+event.put('/event/:id', auth, upload.fields([
     { name: 'header_event', maxCount: 1 },
     { name: 'gambar_event', maxCount: 1 },
     { name: 'dokumentasi_event' }
 ]), eventController.editEvent)
-event.delete('/event/:id', eventController.deleteEvent)
+event.delete('/event/:id', auth, eventController.deleteEvent)
 
 export default event

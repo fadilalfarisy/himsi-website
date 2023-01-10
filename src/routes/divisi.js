@@ -6,8 +6,8 @@ const divisiBidang = express.Router()
 
 divisiBidang.get('/divisi/', divisiController.getDivisi)
 divisiBidang.get('/divisi/:id', divisiController.getDivisiById)
-divisiBidang.post('/divisi', divisiController.createDivisi)
-divisiBidang.put('/divisi/:id', divisiController.editDivisi)
-divisiBidang.delete('/divisi/:id', divisiController.deleteDivisi)
+divisiBidang.post('/divisi', auth, divisiController.createDivisi)
+divisiBidang.put('/divisi/:id', auth, divisiController.editDivisi)
+divisiBidang.delete('/divisi/:id', auth, divisiController.deleteDivisi)
 
 export default divisiBidang

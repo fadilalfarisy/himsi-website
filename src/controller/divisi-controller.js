@@ -29,9 +29,9 @@ const createDivisi = async (req, res, next) => {
 const getDivisi = async (req, res, next) => {
     try {
         let { bidang } = req.query;
-
         let query = {}
 
+        //filter by bidang
         if (bidang) {
             query = {
                 'bidang.nama_bidang': {
@@ -77,13 +77,10 @@ const getDivisi = async (req, res, next) => {
 }
 
 const getDivisiById = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
-        const divisi = await Divisi.findOne({
-            _id: id
-        })
+        const divisi = await Divisi.findOne({ _id: id })
+        //when id divisi is not found
         if (!divisi) {
             return res.status(400).json({
                 status: 400,
@@ -107,17 +104,14 @@ const getDivisiById = async (req, res, next) => {
 }
 
 const editDivisi = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     const {
         nama_divisi,
         id_bidang
     } = req.body
     try {
-        const divisi = await Divisi.findOne({
-            _id: id
-        })
+        const divisi = await Divisi.findOne({ _id: id })
+        //when id divisi is not found
         if (!divisi) {
             return res.status(400).json({
                 status: 400,
@@ -125,9 +119,8 @@ const editDivisi = async (req, res, next) => {
                 info: 'divisi not found'
             });
         }
-        await Divisi.updateOne({
-            _id: id
-        }, {
+
+        await Divisi.updateOne({ _id: id }, {
             $set: {
                 nama_divisi,
                 id_bidang
@@ -149,13 +142,10 @@ const editDivisi = async (req, res, next) => {
 }
 
 const deleteDivisi = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
-        const divisi = await Divisi.findOne({
-            _id: id
-        })
+        const divisi = await Divisi.findOne({ _id: id })
+        //when id divisi is not found
         if (!divisi) {
             return res.status(400).json({
                 status: 400,
@@ -164,9 +154,8 @@ const deleteDivisi = async (req, res, next) => {
             });
         }
 
-        const deletedDivisi = await Divisi.deleteOne({
-            _id: id
-        })
+        const deletedDivisi = await Divisi.deleteOne({ _id: id })
+        //when no one divisi is deleted
         if (deletedDivisi.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

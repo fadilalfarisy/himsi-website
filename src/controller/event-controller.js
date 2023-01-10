@@ -18,11 +18,13 @@ const createEvent = async (req, res, next) => {
         id_divisi
     } = req.body
 
+    //when tanggal selesai event is not sent
     if (!tanggal_selesai_event) {
         tanggal_selesai_event = null
     }
 
     try {
+        //when header event and gambar event is not sent
         if (!req.files.header_event || !req.files.gambar_event) {
             return res.status(400).json({
                 status: 400,
@@ -38,6 +40,7 @@ const createEvent = async (req, res, next) => {
 
         let pathDokumentasiEvent = []
 
+        //when gambar dokumentasi event is sent
         if (req.files.dokumentasi_event) {
             function uploadGambarDokumentasi(pathDokumentasi) {
                 return new Promise((resolve) => {
@@ -60,6 +63,7 @@ const createEvent = async (req, res, next) => {
             }
 
             const { dokumentasi_event } = req.files
+            //make all path dokumentasi event in one array 
             pathDokumentasiEvent = await pushData(dokumentasi_event)
         }
 
@@ -121,6 +125,7 @@ const getEvent = async (req, res, next) => {
             queryPage = Number(page)
         }
 
+        //filter by bidang
         if (bidang) {
             query = {
                 ...query,
@@ -131,6 +136,7 @@ const getEvent = async (req, res, next) => {
             }
         }
 
+        //filter by kategori event
         if (kategori) {
             query = {
                 ...query,
@@ -141,6 +147,7 @@ const getEvent = async (req, res, next) => {
             }
         }
 
+        //filter by status event
         if (status) {
             query = {
                 ...query,
@@ -151,6 +158,7 @@ const getEvent = async (req, res, next) => {
             }
         }
 
+        //filter by judul event
         if (judul) {
             query = {
                 ...query,
@@ -161,6 +169,7 @@ const getEvent = async (req, res, next) => {
             }
         }
 
+        //filter by search keyword
         if (search) {
             query = {
                 ...query,
@@ -257,6 +266,7 @@ const getEventById = async (req, res, next) => {
     const { id } = req.params
     try {
         const event = await Event.findOne({ _id: id })
+        //when id event is not found
         if (!event) {
             return res.status(400).json({
                 status: 400,
@@ -295,11 +305,13 @@ const editEvent = async (req, res, next) => {
     let header_event, public_id_header_event, gambar_event, public_id_gambar_event = ''
     let dokumentasi_event = []
 
+    //when tanggal selesai event is not sent
     if (!tanggal_selesai_event) {
         tanggal_selesai_event = null
     }
     try {
         const existingEvent = await Event.findOne({ _id: id })
+        //when id event is not found
         if (!existingEvent) {
             return res.status(400).json({
                 status: 400,
@@ -308,53 +320,51 @@ const editEvent = async (req, res, next) => {
             });
         }
 
+        //when header event is not updated
         if (!req.files.header_event) {
             public_id_header_event = existingEvent.header_event.public_id
             header_event = existingEvent.header_event.url
-            console.log('update without new header')
         }
+        //when gambar event is not updated
         if (!req.files.gambar_event) {
             public_id_gambar_event = existingEvent.gambar_event.public_id
             gambar_event = existingEvent.gambar_event.url
-            console.log('update without new gambar')
         }
+        //when dokumentasi event is not updated
         if (!req.files.dokumentasi_event) {
             dokumentasi_event = existingEvent.dokumentasi_event
-            console.log('update without new dokumentasi')
         }
-
+        //when header event is updated
         if (req.files.header_event) {
-            const {
-                header_event: [{
-                    path: pathHeaderEvent
-                }],
-            } = req.files
+            const { header_event: [{ path: pathHeaderEvent }] } = req.files
+
             //delete old images
             cloudinary.uploader.destroy(existingEvent.header_event.public_id)
                 .then(result => console.log(result))
+            // const oldpathHeaderEvent = path.join(__dirname, '../../', existingEvent.header_event)
+            // fs.unlink(oldpathHeaderEvent, (err) => console.log(err))
+
             //save new images
             const uploadHeaderEvent = await cloudinary.uploader.upload(pathHeaderEvent)
 
             public_id_header_event = uploadHeaderEvent.public_id
             header_event = uploadHeaderEvent.secure_url
-            console.log('update with new header')
         }
 
         if (req.files.gambar_event) {
-            const {
-                gambar_event: [{
-                    path: pathGambarEvent
-                }],
-            } = req.files
+            const { gambar_event: [{ path: pathGambarEvent }] } = req.files
+
             //delete old images
             cloudinary.uploader.destroy(existingEvent.gambar_event.public_id)
                 .then(result => console.log(result))
+            // const oldpathGambarEvent = path.join(__dirname, '../../', existingEvent.gambar_event)
+            // fs.unlink(oldpathGambarEvent, (err) => console.log(err))
+
             //save new images
             const uploadGambarEvent = await cloudinary.uploader.upload(pathGambarEvent)
 
             public_id_gambar_event = uploadGambarEvent.public_id
             gambar_event = uploadGambarEvent.secure_url
-            console.log('update with new gambar')
         }
 
         if (req.files.dokumentasi_event) {
@@ -364,6 +374,8 @@ const editEvent = async (req, res, next) => {
                 for (const element of oldDokumentasiEvent) {
                     cloudinary.uploader.destroy(element.public_id)
                         .then(result => console.log(result))
+                    // const oldpathDokumentasi = path.join(__dirname, '../../', element.path)
+                    // fs.unlink(oldpathDokumentasi, (err) => console.log(err))
                 }
             }
 
@@ -389,31 +401,9 @@ const editEvent = async (req, res, next) => {
             }
 
             const pathDokumentasiEvent = req.files.dokumentasi_event
+            //make all path dokumentasi event in one arrray
             dokumentasi_event = await pushData(pathDokumentasiEvent)
-            console.log('update with new dokumentasi')
         }
-
-        // const oldpathGambarEvent = path.join(__dirname, '../../', existingEvent.gambar_event)
-        // const oldpathHeaderEvent = path.join(__dirname, '../../', existingEvent.header_event)
-
-        // fs.unlink(oldpathGambarEvent, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit event'
-        //         });
-        //     }
-        // })
-        // fs.unlink(oldpathHeaderEvent, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit event'
-        //         });
-        //     }
-        // })
 
         await Event.updateOne({ _id: id }, {
             $set: {
@@ -455,6 +445,7 @@ const deleteEvent = async (req, res, next) => {
     const { id } = req.params
     try {
         const existingEvent = await Event.findOne({ _id: id })
+        //when id event is not found
         if (!existingEvent) {
             return res.status(400).json({
                 status: 400,
@@ -463,6 +454,7 @@ const deleteEvent = async (req, res, next) => {
             });
         }
 
+        //delete images
         cloudinary.uploader.destroy(existingEvent.header_event.public_id)
             .then(result => console.log(result))
         cloudinary.uploader.destroy(existingEvent.gambar_event.public_id)
@@ -476,11 +468,18 @@ const deleteEvent = async (req, res, next) => {
 
         // const pathGambarEvent = path.join(__dirname, '../../', event.gambar_event)
         // const pathHeaderEvent = path.join(__dirname, '../../', event.header_event)
-
-        // fs.unlink(pathHeaderEvent, (err) => console.log(err))
         // fs.unlink(pathGambarEvent, (err) => console.log(err))
+        // fs.unlink(pathHeaderEvent, (err) => console.log(err))
+        // if (existingEvent.dokumentasi_event.length > 0) {
+        //     const { dokumentasi_event } = existingEvent
+        //     for (const element of dokumentasi_event) {
+        //         const pathGambarEvent = path.join(__dirname, '../../', element.path)
+        //         fs.unlink(pathGambarEvent, (err) => console.log(err))
+        //     }
+        // }
 
         const deletedEvent = await Event.deleteOne({ _id: id })
+        //when no one event is deleted
         if (deletedEvent.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,

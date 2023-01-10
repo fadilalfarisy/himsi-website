@@ -17,6 +17,7 @@ const createPengurus = async (req, res, next) => {
         id_bidang
     } = req.body
     try {
+        //when foto pengurus is not sent
         if (!req.file) {
             return res.status(400).json({
                 status: 400,
@@ -25,10 +26,7 @@ const createPengurus = async (req, res, next) => {
             });
         }
 
-        const {
-            path: pathFotoPengurus
-        } = req.file
-
+        const { path: pathFotoPengurus } = req.file
         const uploadFotoPengurus = await cloudinary.uploader.upload(pathFotoPengurus)
 
         const newPengurus = await Pengurus.create({
@@ -41,7 +39,6 @@ const createPengurus = async (req, res, next) => {
                 url: uploadFotoPengurus.secure_url
             }
         });
-
         res.status(200).json({
             status: 200,
             message: 'success',
@@ -60,9 +57,9 @@ const createPengurus = async (req, res, next) => {
 const getPengurus = async (req, res, next) => {
     try {
         let { bidang } = req.query;
-
         let query = {}
 
+        //filter by bidang
         if (bidang) {
             query = {
                 'bidang.nama_bidang': {
@@ -95,7 +92,6 @@ const getPengurus = async (req, res, next) => {
                 }
             }
         ])
-
         res.status(200).json({
             status: 200,
             message: 'success',
@@ -113,13 +109,10 @@ const getPengurus = async (req, res, next) => {
 }
 
 const getPengurusById = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
-        const pengurus = await Pengurus.findOne({
-            _id: id
-        })
+        const pengurus = await Pengurus.findOne({ _id: id })
+        //when id pengurus is not found
         if (!pengurus) {
             return res.status(400).json({
                 status: 400,
@@ -144,9 +137,7 @@ const getPengurusById = async (req, res, next) => {
 
 
 const editPengurus = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     const {
         nama_pengurus,
         jabatan,
@@ -157,10 +148,10 @@ const editPengurus = async (req, res, next) => {
     let foto_pengurus, public_id_foto_pengurus = ''
 
     try {
-
         const existingPengurus = await Pengurus.findOne({
             _id: id
         })
+        //when id partner is not found
         if (!existingPengurus) {
             return res.status(400).json({
                 status: 400,
@@ -173,46 +164,23 @@ const editPengurus = async (req, res, next) => {
         if (!req.file) {
             foto_pengurus = existingPengurus.foto_pengurus.url
             public_id_foto_pengurus = existingPengurus.foto_pengurus.public_id
-            console.log('without update foto pengurus')
-            //when foto pengurus is updated
-        } else {
-            const {
-                path: pathFotoPengurus
-            } = req.file
+        }
+        //when foto pengurus is updated
+        if (req.file) {
+            const { path: pathFotoPengurus } = req.file
 
             //delete old images
             cloudinary.uploader.destroy(existingPengurus.foto_pengurus.public_id)
                 .then(result => console.log(result))
+            // const oldPathFotoPengurus = path.join(__dirname, '../../', existingPengurus.foto_pengurus)
+            // fs.unlink(oldPathFotoPengurus, (err) => console.log(err))
+
             //save new images
             const uploadFotoPengurus = await cloudinary.uploader.upload(pathFotoPengurus)
 
             foto_pengurus = uploadFotoPengurus.secure_url
             public_id_foto_pengurus = uploadFotoPengurus.public_id
-            console.log('updated foto pengurus')
         }
-
-
-        // const oldpathGambarBerita = path.join(__dirname, '../../', existingBerita.gambar_berita)
-        // const oldpathHeaderBerita = path.join(__dirname, '../../', existingBerita.header_berita)
-
-        // fs.unlink(oldpathGambarBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit berita'
-        //         });
-        //     }
-        // })
-        // fs.unlink(oldpathHeaderBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit berita'
-        //         });
-        //     }
-        // })
 
         await Pengurus.updateOne({
             _id: id
@@ -244,13 +212,10 @@ const editPengurus = async (req, res, next) => {
 }
 
 const deletePengurus = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
-        const pengurus = await Pengurus.findOne({
-            _id: id
-        })
+        const pengurus = await Pengurus.findOne({ _id: id })
+        //when id pengurus is not found
         if (!pengurus) {
             return res.status(400).json({
                 status: 400,
@@ -262,31 +227,11 @@ const deletePengurus = async (req, res, next) => {
         //delete image
         cloudinary.uploader.destroy(pengurus.foto_pengurus.public_id)
             .then(result => console.log(result))
+        // const oldPathFotoPengurus = path.join(__dirname, '../../', existingPengurus.foto_pengurus)
+        // fs.unlink(oldPathFotoPengurus, (err) => console.log(err))
 
-        // const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
-        // const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
-        // fs.unlink(pathHeaderBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to delete berita'
-        //         });
-        //     }
-        // })
-        // fs.unlink(pathGambarBerita, (err) => {
-        //     if (err) {
-        //         return res.status(400).json({
-        //             status: 400,
-        //             message: 'failed',
-        //             info: 'failed to edit berita'
-        //         });
-        //     }
-        // })
-
-        const deletedPengurus = await Pengurus.deleteOne({
-            _id: id
-        })
+        const deletedPengurus = await Pengurus.deleteOne({ _id: id })
+        //when no one pengurus is deleted
         if (deletedPengurus.deletedCount === 0) {
             return res.status(400).json({
                 status: 400,
