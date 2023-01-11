@@ -269,7 +269,7 @@ const editBerita = async (req, res, next) => {
             const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
 
             //set value gambar berita with new image
-            gambar_berita = uploadGambarBerita.secret_url
+            gambar_berita = uploadGambarBerita.secure_url
             public_id_gambar_berita = uploadGambarBerita.public_id
         }
 
