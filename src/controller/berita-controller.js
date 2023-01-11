@@ -129,6 +129,10 @@ const getBerita = async (req, res, next) => {
             {
                 $match: query
             }, {
+                $sort: {
+                    _id: -1
+                }
+            }, {
                 $facet: {
                     pagination: [{
                         $count: "total"
