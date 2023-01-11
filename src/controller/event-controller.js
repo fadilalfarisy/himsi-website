@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+import mongoose from 'mongoose';
 import Event from "../model/events.js"
 import cloudinary from '../libs/cloudinary.js'
 
@@ -187,7 +188,7 @@ const getEvent = async (req, res, next) => {
             }
         }
 
-        let event = await Event.aggregate([
+        const event = await Event.aggregate([
             {
                 $lookup: {
                     from: 'divisis',
@@ -265,9 +266,47 @@ const getEvent = async (req, res, next) => {
 const getEventById = async (req, res, next) => {
     const { id } = req.params
     try {
-        const event = await Event.findOne({ _id: id })
+        const event = await Event.aggregate([
+            {
+                $lookup: {
+                    from: 'divisis',
+                    localField: 'id_divisi',
+                    foreignField: '_id',
+                    as: 'divisi'
+                },
+            }, {
+                $unwind: '$divisi'
+            }, {
+                $lookup: {
+                    from: 'bidangs',
+                    localField: 'divisi.id_bidang',
+                    foreignField: '_id',
+                    as: 'bidang'
+                },
+            }, {
+                $unwind: '$bidang'
+            }, {
+                $match: { _id: mongoose.Types.ObjectId(id) }
+            }, {
+                $project: {
+                    _id: 1,
+                    judul_event: 1,
+                    tanggal_mulai_event: 1,
+                    tanggal_selesai_event: 1,
+                    status_event: 1,
+                    kategori_event: 1,
+                    isi_event: 1,
+                    penulis_event: 1,
+                    header_event: 1,
+                    gambar_event: 1,
+                    dokumentasi_event: 1,
+                    divisi: '$divisi.nama_divisi',
+                    bidang: '$bidang.nama_bidang',
+                }
+            }
+        ])
         //when id event is not found
-        if (!event) {
+        if (event.length === 0) {
             return res.status(400).json({
                 status: 400,
                 message: 'failed',
@@ -277,7 +316,7 @@ const getEventById = async (req, res, next) => {
         res.status(200).json({
             status: 200,
             message: 'success',
-            data: event
+            data: event[0]
         })
     } catch (error) {
         console.log(error.message);

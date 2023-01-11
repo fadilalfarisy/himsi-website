@@ -169,9 +169,7 @@ const getBerita = async (req, res, next) => {
 }
 
 const getBeritaById = async (req, res, next) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     try {
         //find berita by id
         const berita = await Berita.findOne({ _id: id })
