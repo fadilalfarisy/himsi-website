@@ -9,7 +9,6 @@ import cloudinary from '../libs/cloudinary.js';
 const createBerita = async (req, res, next) => {
     const {
         judul_berita,
-        tanggal_berita,
         kategori_berita,
         isi_berita,
         penulis_berita,
@@ -36,7 +35,6 @@ const createBerita = async (req, res, next) => {
 
         const newBerita = await Berita.create({
             judul_berita,
-            tanggal_berita,
             kategori_berita,
             isi_berita,
             penulis_berita,
@@ -205,7 +203,6 @@ const editBerita = async (req, res, next) => {
     const { id } = req.params
     const {
         judul_berita,
-        tanggal_berita,
         kategori_berita,
         isi_berita,
         penulis_berita,
@@ -280,7 +277,6 @@ const editBerita = async (req, res, next) => {
         await Berita.updateOne({ _id: id }, {
             $set: {
                 judul_berita,
-                tanggal_berita,
                 kategori_berita,
                 isi_berita,
                 penulis_berita,

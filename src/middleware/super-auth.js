@@ -1,4 +1,3 @@
-import { decode } from 'jsonwebtoken';
 import { verifyAccessToken } from '../libs/jwt.js';
 
 const superAuth = (req, res, next) => {

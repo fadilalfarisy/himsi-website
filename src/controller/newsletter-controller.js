@@ -1,8 +1,11 @@
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import md5 from 'md5'
+import config from '../config/config.js'
+
+const { API_KEY_MAILCHIMP } = config
 
 mailchimp.setConfig({
-    apiKey: process.env.API_KEY_MAILCHIMP,
+    apiKey: API_KEY_MAILCHIMP,
     server: 'us14',
 });
 

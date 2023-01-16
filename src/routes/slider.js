@@ -1,7 +1,7 @@
 import express from "express"
 import multer from "multer"
 import sliderController from '../controller/slider-controller.js'
-import auth from '../middleware/auth-user.js'
+import superAuth from "../middleware/super-auth.js"
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -33,8 +33,8 @@ const sliderInformation = express.Router()
 
 sliderInformation.get('/slider', sliderController.getSlider)
 sliderInformation.get('/slider/:id', sliderController.getSliderById)
-sliderInformation.post('/slider', auth, upload.single('gambar_slider'), sliderController.createSlider)
-sliderInformation.put('/slider/:id', auth, upload.single('gambar_slider'), sliderController.editSlider)
-sliderInformation.delete('/slider/:id', auth, sliderController.deleteSlider)
+sliderInformation.post('/slider', superAuth, upload.single('gambar_slider'), sliderController.createSlider)
+sliderInformation.put('/slider/:id', superAuth, upload.single('gambar_slider'), sliderController.editSlider)
+sliderInformation.delete('/slider/:id', superAuth, sliderController.deleteSlider)
 
 export default sliderInformation

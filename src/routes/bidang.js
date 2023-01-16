@@ -1,5 +1,6 @@
 import express from "express"
 import multer from "multer"
+import superAuth from "../middleware/super-auth.js"
 import bidangController from '../controller/bidang-controller.js'
 
 //config images storage
@@ -35,8 +36,8 @@ const bidang = express.Router()
 
 bidang.get('/bidang/', bidangController.getBidang)
 bidang.get('/bidang/:id', bidangController.getBidangById)
-bidang.post('/bidang', upload.single('logo_bidang'), bidangController.createBidang)
-bidang.put('/bidang/:id', upload.single('logo_bidang'), bidangController.editBidang)
-bidang.delete('/bidang/:id', bidangController.deleteBidang)
+bidang.post('/bidang', superAuth, upload.single('logo_bidang'), bidangController.createBidang)
+bidang.put('/bidang/:id', superAuth, upload.single('logo_bidang'), bidangController.editBidang)
+bidang.delete('/bidang/:id', superAuth, bidangController.deleteBidang)
 
 export default bidang

@@ -1,7 +1,7 @@
 import express from "express"
 import multer from "multer"
 import partnerController from '../controller/partner-controller.js'
-import auth from '../middleware/auth-user.js'
+import superAuth from "../middleware/super-auth.js"
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -33,8 +33,8 @@ const partner = express.Router()
 
 partner.get('/partner', partnerController.getPartner)
 partner.get('/partner/:id', partnerController.getPartnerById)
-partner.post('/partner', auth, upload.single('logo_partner'), partnerController.createPartner)
-partner.put('/partner/:id', auth, upload.single('logo_partner'), partnerController.editPartner)
-partner.delete('/partner/:id', auth, partnerController.deletePartner)
+partner.post('/partner', superAuth, upload.single('logo_partner'), partnerController.createPartner)
+partner.put('/partner/:id', superAuth, upload.single('logo_partner'), partnerController.editPartner)
+partner.delete('/partner/:id', superAuth, partnerController.deletePartner)
 
 export default partner

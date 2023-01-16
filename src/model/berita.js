@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const beritaSchema = new mongoose.Schema({
     judul_berita: String,
-    tanggal_berita: Date,
     penulis_berita: String,
     kategori_berita: Array,
     isi_berita: String,
@@ -16,6 +15,11 @@ const beritaSchema = new mongoose.Schema({
     },
     link_pdf: String,
     link_berita: String
+}, {
+    timestamps: {
+        createdAt: true,
+        updatedAt: false
+    }
 });
 
 const Berita = mongoose.model("Berita", beritaSchema);

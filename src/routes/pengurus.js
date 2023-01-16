@@ -1,7 +1,7 @@
 import express from "express"
 import multer from "multer"
 import pengurusController from '../controller/pengurus-controller.js'
-import auth from '../middleware/auth-user.js'
+import superAuth from "../middleware/super-auth.js"
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -36,8 +36,8 @@ const pengurus = express.Router()
 
 pengurus.get('/pengurus/', pengurusController.getPengurus)
 pengurus.get('/pengurus/:id', pengurusController.getPengurusById)
-pengurus.post('/pengurus', auth, upload.single('foto_pengurus'), pengurusController.createPengurus)
-pengurus.put('/pengurus/:id', auth, upload.single('foto_pengurus'), pengurusController.editPengurus)
-pengurus.delete('/pengurus/:id', auth, pengurusController.deletePengurus)
+pengurus.post('/pengurus', superAuth, upload.single('foto_pengurus'), pengurusController.createPengurus)
+pengurus.put('/pengurus/:id', superAuth, upload.single('foto_pengurus'), pengurusController.editPengurus)
+pengurus.delete('/pengurus/:id', superAuth, pengurusController.deletePengurus)
 
 export default pengurus

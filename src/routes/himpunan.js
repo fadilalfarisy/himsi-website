@@ -1,7 +1,7 @@
 import express from "express"
 import multer from "multer"
 import himpunanController from '../controller/himpunan-controller.js'
-import auth from '../middleware/auth-user.js'
+import superAuth from "../middleware/super-auth.js"
 
 //config images storage
 const filestorage = multer.diskStorage({
@@ -32,10 +32,10 @@ const upload = multer({ storage: filestorage, fileFilter: fileFilter })
 const himpunan = express.Router()
 
 himpunan.get('/himpunan', himpunanController.getHimpunan)
-himpunan.put('/himpunan', auth, upload.fields([
+himpunan.put('/himpunan', superAuth, upload.fields([
     { name: 'gambar_struktur', maxCount: 1 },
     { name: 'logo_himpunan', maxCount: 1 }
 ]), himpunanController.saveHimpunan)
-himpunan.delete('/himpunan/:id', auth, himpunanController.deleteHimpunan)
+himpunan.delete('/himpunan/:id', superAuth, himpunanController.deleteHimpunan)
 
 export default himpunan

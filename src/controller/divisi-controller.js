@@ -1,5 +1,4 @@
 import Divisi from '../model/divisi.js'
-import Bidang from '../model/bidang.js'
 
 const createDivisi = async (req, res, next) => {
     const {

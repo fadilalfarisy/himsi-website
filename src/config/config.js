@@ -2,23 +2,30 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 //development
-// const config = {
-//     MAX_AGE_REFRESH_TOKEN: '15m',
-//     MAX_AGE_ACCESS_TOKEN: '5m',
-//     ACCESS_TOKEN: 'himsi',
-//     REFRESH_TOKEN: 'himsi1',
-//     MONGO_URI: 'mongodb://localhost:27017/test',
-//     PORT: 3000
-// }
+const config = {
+    CLOUD_NAME: 'dr00ghniy',
+    API_KEY: '557786495727158',
+    API_SECRET: 'Z5C30Zfk36osyKzxu3umcW1BpnM',
+    MAX_AGE_ACCESS_TOKEN: '15m',
+    MAX_AGE_REFRESH_TOKEN: '1d',
+    REFRESH_TOKEN: 'himsi2',
+    ACCESS_TOKEN: 'himsi',
+    API_KEY_MAILCHIMP: '20344bcae626943c27ca8bcf8c331594-us14',
+    PORT: 3000,
+    MONGO_URI: 'mongodb://fadilalfarisy:lelekuning@cluster0-shard-00-00.mnvpb.mongodb.net:27017,cluster0-shard-00-01.mnvpb.mongodb.net:27017,cluster0-shard-00-02.mnvpb.mongodb.net:27017/?ssl=true&replicaSet=atlas-aw3u78-shard-0&authSource=admin&retryWrites=true&w=majority'
+}
 
 //production
-const config = {
-    MAX_AGE_REFRESH_TOKEN: process.env.MAX_AGE_REFRESH_TOKEN,
-    MAX_AGE_ACCESS_TOKEN: process.env.MAX_AGE_ACCESS_TOKEN,
-    ACCESS_TOKEN: process.env.ACCESS_TOKEN,
-    REFRESH_TOKEN: process.env.REFRESH_TOKEN,
-    MONGO_URI: process.env.MONGO_URI,
-    PORT: process.env.PORT
-}
+// const config = {
+//     CLOUD_NAME: process.env.CLOUD_NAME,
+//     API_KEY: process.env.API_KEY,
+//     API_SECRET: process.env.API_SECRET,
+//     MAX_AGE_ACCESS_TOKEN: process.env.MAX_AGE_ACCESS_TOKEN,
+//     MAX_AGE_REFRESH_TOKEN: process.env.MAX_AGE_REFRESH_TOKEN,
+//     REFRESH_TOKEN: process.env.REFRESH_TOKEN,
+//     ACCESS_TOKEN: process.env.ACCESS_TOKEN,
+//     PORT: process.env.PORT,
+//     MONGO_URI: process.env.MONGO_URI
+// }
 
 export default config
