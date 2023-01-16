@@ -33,6 +33,7 @@ const berita = express.Router()
 
 berita.get('/berita/', beritaController.getBerita)
 berita.get('/berita/:id', beritaController.getBeritaById)
+berita.get('/kategori_berita', beritaController.categoryBerita)
 berita.post('/berita', auth, upload.fields([
     { name: 'header_berita', maxCount: 1 },
     { name: 'gambar_berita', maxCount: 1 }

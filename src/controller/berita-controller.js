@@ -356,12 +356,51 @@ const deleteBerita = async (req, res, next) => {
     }
 }
 
+const categoryBerita = async (req, res, next) => {
+    let listKategori = []
+    try {
+        //find berita by id
+        const berita = await Berita.find()
+
+        //when berita is empty
+        if (!berita) {
+            return res.status(200).json({
+                status: 200,
+                message: 'success',
+                data: listKategori
+            })
+        }
+
+        //push all kategori in one variable
+        for (const element of berita) {
+            listKategori.push(...element.kategori_berita)
+        }
+
+        //distict category berita
+        let uniqueKategori = Array.from(new Set(listKategori))
+
+        return res.status(200).json({
+            status: 200,
+            message: 'success',
+            data: uniqueKategori
+        })
+    } catch (error) {
+        console.log(error.message)
+        return res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: 'server error'
+        });
+    }
+}
+
 const beritaController = {
     createBerita,
     getBerita,
     getBeritaById,
     editBerita,
     deleteBerita,
+    categoryBerita
 }
 
 export default beritaController
