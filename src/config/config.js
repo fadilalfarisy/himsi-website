@@ -11,7 +11,9 @@ dotenv.config()
 //     REFRESH_TOKEN: 'himsi2',
 //     ACCESS_TOKEN: 'himsi',
 //     API_KEY_MAILCHIMP: '20344bcae626943c27ca8bcf8c331594-us14',
+//     ID_AUDIENCE: 'a8190bec4c',
 //     PORT: 3000,
+//     MONGO_URI: 'mongodb://0.0.0.0:27017/example',
 //     MONGO_URI: 'mongodb://fadilalfarisy:lelekuning@cluster0-shard-00-00.mnvpb.mongodb.net:27017,cluster0-shard-00-01.mnvpb.mongodb.net:27017,cluster0-shard-00-02.mnvpb.mongodb.net:27017/?ssl=true&replicaSet=atlas-aw3u78-shard-0&authSource=admin&retryWrites=true&w=majority'
 // }
 
@@ -25,6 +27,7 @@ const config = {
     REFRESH_TOKEN: process.env.REFRESH_TOKEN,
     ACCESS_TOKEN: process.env.ACCESS_TOKEN,
     API_KEY_MAILCHIMP: process.env.API_KEY_MAILCHIMP,
+    ID_AUDIENCE: process.env.ID_AUDIENCE,
     PORT: process.env.PORT,
     MONGO_URI: process.env.MONGO_URI
 }

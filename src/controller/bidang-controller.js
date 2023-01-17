@@ -1,10 +1,6 @@
-import fs from 'fs';
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import Bidang from "../model/bidang.js"
 import cloudinary from '../libs/cloudinary.js'
+import removeImage from "../libs/photos.js"
 
 const createBidang = async (req, res, next) => {
     const {
@@ -134,8 +130,7 @@ const editBidang = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingBidang.logo_bidang.public_id)
                 .then(result => console.log(result))
-            // const pathLogoBidang = path.join(__dirname, '../../', existingBidang.logo_bidang)
-            // fs.unlink(pathLogoBidang, (err) =>  console.log(err))
+            // removeImage(existingBidang.logo_bidang)
 
             //save new images
             const uploadLogoBidang = await cloudinary.uploader.upload(pathLogoBidang)
@@ -187,9 +182,7 @@ const deleteBidang = async (req, res, next) => {
         //delete image
         cloudinary.uploader.destroy(bidang.logo_bidang.public_id)
             .then(result => console.log(result))
-
-        // const pathLogoBidang = path.join(__dirname, '../../', bidang.logo_bidang)
-        // fs.unlink(pathLogoBidang, (err) =>  console.log(err))
+        // removeImage(bidang.logo_bidang)
 
         const deletedBidang = await Bidang.deleteOne({ _id: id })
         //when no one bidang is deleted

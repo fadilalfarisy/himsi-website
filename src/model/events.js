@@ -14,6 +14,7 @@ const eventSchema = new mongoose.Schema({
     },
     isi_event: String,
     penulis_event: String,
+    link_pdf: String,
     header_event: {
         public_id: String,
         url: String

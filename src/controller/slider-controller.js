@@ -1,10 +1,6 @@
-import fs from 'fs';
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import Slider from "../model/slider-information.js"
 import cloudinary from '../libs/cloudinary.js'
+import removeImage from "../libs/photos.js"
 
 const createSlider = async (req, res, next) => {
     const { judul_slider } = req.body
@@ -118,8 +114,7 @@ const editSlider = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingSlider.gambar_slider.public_id)
                 .then(result => console.log(result))
-            // const oldPathGambarSlider = path.join(__dirname, '../../', existingSlider.gambar_slider)
-            // fs.unlink(oldPathGambarSlider, (err) => { console.log(err) })
+            //removeImage(existingSlider.gambar_slider)
 
             //save new images
             const uploadGambarSlider = await cloudinary.uploader.upload(pathSlider)
@@ -168,8 +163,8 @@ const deleteSlider = async (req, res, next) => {
         //deleted image
         cloudinary.uploader.destroy(slider.gambar_slider.public_id)
             .then(result => console.log(result))
-        // const oldPathGambarSlider = path.join(__dirname, '../../', slider.gambar_slider)
-        // fs.unlink(oldPathGambarSlider, (err) => { console.log(err) })
+        //removeImage(slider.gambar_slider)
+
 
         const deletedSlider = await Slider.deleteOne({ _id: id })
         //when no one slider is deleted

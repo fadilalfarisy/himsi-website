@@ -2,7 +2,7 @@ import mailchimp from "@mailchimp/mailchimp_marketing";
 import md5 from 'md5'
 import config from '../config/config.js'
 
-const { API_KEY_MAILCHIMP } = config
+const { API_KEY_MAILCHIMP, ID_AUDIENCE } = config
 
 mailchimp.setConfig({
     apiKey: API_KEY_MAILCHIMP,
@@ -33,9 +33,8 @@ const getAllAudience = async (req, res, next) => {
 }
 
 const getSpecificAudience = async (req, res, next) => {
-    const id = 'a8190bec4c'
     try {
-        const audience = await mailchimp.lists.getList(id);
+        const audience = await mailchimp.lists.getList(ID_AUDIENCE);
         res.status(200).json({
             status: 200,
             message: "success",
@@ -52,9 +51,8 @@ const getSpecificAudience = async (req, res, next) => {
 }
 
 const getAllMember = async (req, res, next) => {
-    const id = 'a8190bec4c'
     try {
-        const allMember = await mailchimp.lists.getListMembersInfo(id);
+        const allMember = await mailchimp.lists.getListMembersInfo(ID_AUDIENCE);
         res.status(200).json({
             status: 200,
             message: "success",
@@ -71,10 +69,9 @@ const getAllMember = async (req, res, next) => {
 }
 
 const getSpecificMember = async (req, res, next) => {
-    const { id } = req.params
     const { email } = req.body
     try {
-        const member = await mailchimp.lists.getListMember(id, md5(email.toLowerCase()));
+        const member = await mailchimp.lists.getListMember(ID_AUDIENCE, md5(email.toLowerCase()));
         res.status(200).json({
             status: 200,
             message: "success",
@@ -91,10 +88,9 @@ const getSpecificMember = async (req, res, next) => {
 }
 
 const createMember = async (req, res, next) => {
-    const id = 'a8190bec4c'
     const { email } = req.body
     try {
-        const newMember = await mailchimp.lists.addListMember(id, {
+        const newMember = await mailchimp.lists.addListMember(ID_AUDIENCE, {
             email_address: email,
             status: 'pending'
         });
@@ -114,11 +110,10 @@ const createMember = async (req, res, next) => {
 }
 
 const updateMember = async (req, res, next) => {
-    const id = 'a8190bec4c'
     const { email } = req.body
     try {
         const member = await mailchimp.lists.updateListMember(
-            id,
+            ID_AUDIENCE,
             md5(email.toLowerCase()),
             {
                 status: "pending"
@@ -140,11 +135,10 @@ const updateMember = async (req, res, next) => {
 }
 
 const deleteMember = async (req, res, next) => {
-    const id = 'a8190bec4c'
     const { email } = req.body
     try {
         const member = await mailchimp.lists.updateListMember(
-            id,
+            ID_AUDIENCE,
             md5(email.toLowerCase()),
             {
                 status: "unsubscribed"

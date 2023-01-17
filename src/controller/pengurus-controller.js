@@ -1,10 +1,6 @@
-import fs from 'fs';
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import Pengurus from "../model/pengurus.js"
 import cloudinary from '../libs/cloudinary.js'
+import removeImage from "../libs/photos.js"
 
 const createPengurus = async (req, res, next) => {
     const {
@@ -169,8 +165,7 @@ const editPengurus = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingPengurus.foto_pengurus.public_id)
                 .then(result => console.log(result))
-            // const oldPathFotoPengurus = path.join(__dirname, '../../', existingPengurus.foto_pengurus)
-            // fs.unlink(oldPathFotoPengurus, (err) => console.log(err))
+            //removeImage(existingPengurus.foto_pengurus)
 
             //save new images
             const uploadFotoPengurus = await cloudinary.uploader.upload(pathFotoPengurus)
@@ -224,8 +219,7 @@ const deletePengurus = async (req, res, next) => {
         //delete image
         cloudinary.uploader.destroy(pengurus.foto_pengurus.public_id)
             .then(result => console.log(result))
-        // const oldPathFotoPengurus = path.join(__dirname, '../../', existingPengurus.foto_pengurus)
-        // fs.unlink(oldPathFotoPengurus, (err) => console.log(err))
+        //removeImage(pengurus.foto_pengurus)
 
         const deletedPengurus = await Pengurus.deleteOne({ _id: id })
         //when no one pengurus is deleted

@@ -1,11 +1,7 @@
-import fs from 'fs';
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import mongoose from 'mongoose';
 import Event from "../model/events.js"
 import cloudinary from '../libs/cloudinary.js'
+import removeImage from '../libs/photos.js';
 
 const createEvent = async (req, res, next) => {
     let {
@@ -16,6 +12,7 @@ const createEvent = async (req, res, next) => {
         kategori_event,
         isi_event,
         penulis_event,
+        link_pdf,
         id_divisi
     } = req.body
 
@@ -79,6 +76,7 @@ const createEvent = async (req, res, next) => {
             kategori_event,
             isi_event,
             penulis_event,
+            link_pdf,
             header_event: {
                 public_id: uploadHeaderEvent.public_id,
                 url: uploadHeaderEvent.secure_url
@@ -234,6 +232,7 @@ const getEvent = async (req, res, next) => {
                             kategori_event: 1,
                             isi_event: 1,
                             penulis_event: 1,
+                            link_pdf: 1,
                             header_event: 1,
                             gambar_event: 1,
                             dokumentasi_event: 1,
@@ -301,6 +300,7 @@ const getEventById = async (req, res, next) => {
                     kategori_event: 1,
                     isi_event: 1,
                     penulis_event: 1,
+                    link_pdf: 1,
                     header_event: 1,
                     gambar_event: 1,
                     dokumentasi_event: 1,
@@ -342,6 +342,7 @@ const editEvent = async (req, res, next) => {
         kategori_event,
         isi_event,
         penulis_event,
+        link_pdf,
         id_divisi
     } = req.body
 
@@ -384,8 +385,7 @@ const editEvent = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingEvent.header_event.public_id)
                 .then(result => console.log(result))
-            // const oldpathHeaderEvent = path.join(__dirname, '../../', existingEvent.header_event)
-            // fs.unlink(oldpathHeaderEvent, (err) => console.log(err))
+            //removeImage(existingEvent.header_event)
 
             //save new images
             const uploadHeaderEvent = await cloudinary.uploader.upload(pathHeaderEvent)
@@ -400,8 +400,7 @@ const editEvent = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingEvent.gambar_event.public_id)
                 .then(result => console.log(result))
-            // const oldpathGambarEvent = path.join(__dirname, '../../', existingEvent.gambar_event)
-            // fs.unlink(oldpathGambarEvent, (err) => console.log(err))
+            //removeImage(existingEvent.gambar_event)
 
             //save new images
             const uploadGambarEvent = await cloudinary.uploader.upload(pathGambarEvent)
@@ -417,8 +416,7 @@ const editEvent = async (req, res, next) => {
                 for (const element of oldDokumentasiEvent) {
                     cloudinary.uploader.destroy(element.public_id)
                         .then(result => console.log(result))
-                    // const oldpathDokumentasi = path.join(__dirname, '../../', element.path)
-                    // fs.unlink(oldpathDokumentasi, (err) => console.log(err))
+                    //removeImage(element.path)
                 }
             }
 
@@ -457,6 +455,7 @@ const editEvent = async (req, res, next) => {
                 kategori_event,
                 isi_event,
                 penulis_event,
+                link_pdf,
                 header_event: {
                     public_id: public_id_header_event,
                     url: header_event
@@ -509,15 +508,12 @@ const deleteEvent = async (req, res, next) => {
             }
         }
 
-        // const pathGambarEvent = path.join(__dirname, '../../', event.gambar_event)
-        // const pathHeaderEvent = path.join(__dirname, '../../', event.header_event)
-        // fs.unlink(pathGambarEvent, (err) => console.log(err))
-        // fs.unlink(pathHeaderEvent, (err) => console.log(err))
+        // removeImage(existingEvent.header_event)
+        // removeImage(existingEvent.gambar_event)
         // if (existingEvent.dokumentasi_event.length > 0) {
         //     const { dokumentasi_event } = existingEvent
         //     for (const element of dokumentasi_event) {
-        //         const pathGambarEvent = path.join(__dirname, '../../', element.path)
-        //         fs.unlink(pathGambarEvent, (err) => console.log(err))
+        //         removeImage(existingEvent.element.path)
         //     }
         // }
 

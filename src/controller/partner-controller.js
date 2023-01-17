@@ -1,10 +1,6 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 import Partner from "../model/partner.js";
 import cloudinary from '../libs/cloudinary.js'
+import removeImage from "../libs/photos.js";
 
 const getPartner = async (req, res, next) => {
     try {
@@ -107,8 +103,6 @@ const editPartner = async (req, res, next) => {
         if (!req.file) {
             logo_partner = existingPartner.logo_partner.url
             public_id_logo_partner = existingPartner.logo_partner.public_id
-            console.log('without update logo partner')
-
         }
         //when logo partner is updated
         if (req.file) {
@@ -117,8 +111,7 @@ const editPartner = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingPartner.logo_partner.public_id)
                 .then(result => console.log(result))
-            // const oldPathLogoPartner = path.join(__dirname, '../../', existingPartner.logo_partner)
-            // fs.unlink(oldPathLogoPartner, (err) => { console.log(err) })
+            //removeImage(existingPartner.logo_partner)
 
             //save new images
             const uploadLogoPartner = await cloudinary.uploader.upload(pathLogoPartner)
@@ -167,8 +160,7 @@ const deletePartner = async (req, res, next) => {
         //delete image
         cloudinary.uploader.destroy(partner.logo_partner.public_id)
             .then(result => console.log(result))
-        // const oldPathLogoPatrtner = path.join(__dirname, '../../', partner.logo)
-        // fs.unlink(oldPathLogoPatrtner, (err) => { console.log(err) })
+        //removeImage(partner.logo_partner)
 
         const deletedPartner = await Partner.deleteOne({ _id: id })
         if (deletedPartner.deletedCount === 0) {

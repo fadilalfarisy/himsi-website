@@ -1,10 +1,6 @@
-import fs from 'fs';
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import Berita from "../model/berita.js"
 import cloudinary from '../libs/cloudinary.js';
+import removeImage from "../libs/photos.js";
 
 const createBerita = async (req, res, next) => {
     const {
@@ -245,8 +241,7 @@ const editBerita = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingBerita.header_berita.public_id)
                 .then(result => console.log(result))
-            // const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
-            // fs.unlink(pathHeaderBerita, (err) => console.log(err))
+            //removeImage(existingBerita.header_berita)
 
             //save new images
             const uploadHeaderBerita = await cloudinary.uploader.upload(pathHeaderBerita)
@@ -263,8 +258,7 @@ const editBerita = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingBerita.gambar_berita.public_id)
                 .then(result => console.log(result))
-            // const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
-            // fs.unlink(pathGambarBerita, (err) => console.log(err))
+            //removeImage(existingBerita.gambar_berita)
 
             //save new images
             const uploadGambarBerita = await cloudinary.uploader.upload(pathGambarBerita)
@@ -326,10 +320,8 @@ const deleteBerita = async (req, res, next) => {
             .then(result => console.log(result))
         cloudinary.uploader.destroy(berita.gambar_berita.public_id)
             .then(result => console.log(result))
-        // const pathHeaderBerita = path.join(__dirname, '../../', berita.header_berita)
-        // const pathGambarBerita = path.join(__dirname, '../../', berita.gambar_berita)
-        // fs.unlink(pathHeaderBerita, (err) => console.log(err))
-        // fs.unlink(pathGambarBerita, (err) => console.log(err))
+        // removeImage(berita.header_berita)
+        // removeImage(berita.gambar_berita)
 
         const deletedBerita = await Berita.deleteOne({ _id: id })
         //when no one berita is deleted

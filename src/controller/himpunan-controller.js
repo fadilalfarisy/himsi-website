@@ -1,10 +1,6 @@
-import fs from 'fs';
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import Himpunan from "../model/himpunan.js"
 import cloudinary from '../libs/cloudinary.js';
+import removeImage from "../libs/photos.js";
 
 const saveHimpunan = async (req, res, next) => {
     const {
@@ -42,8 +38,7 @@ const saveHimpunan = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingHimpunan.gambar_struktur.public_id)
                 .then(result => console.log(result))
-            // const oldPathGambarStruktur = path.join(__dirname, '../../', existingHimpunan.gambar_struktur)
-            // fs.unlink(oldPathGambarStruktur, (err) => console.log(err))
+            //removeImage(existingHimpunan.gambar_struktur)
 
             //upload gambar struktur
             const uploadGambarStruktur = await cloudinary.uploader.upload(pathGambarStruktur)
@@ -59,8 +54,7 @@ const saveHimpunan = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(existingHimpunan.logo_himpunan.public_id)
                 .then(result => console.log(result))
-            // const oldPathLogoHimpunan = path.join(__dirname, '../../', existingHimpunan.logo_himpunan)
-            // fs.unlink(oldPathLogoHimpunan, (err) => console.log(err))
+            //removeImage(existingHimpunan.logo_himpunan)
 
             //upload logo himpunan
             const uploadLogoHimpunan = await cloudinary.uploader.upload(pathLogoHimpunan)
@@ -141,16 +135,14 @@ const deleteHimpunan = async (req, res, next) => {
             //delete old images
             cloudinary.uploader.destroy(himpunan.gambar_struktur.public_id)
                 .then(result => console.log(result))
-            // const oldPathGambarStruktur = path.join(__dirname, '../../', himpunan.gambar_struktur)
-            // fs.unlink(oldPathGambarStruktur, (err) => console.log(err))
+            //removeImage(himpunan.gambar_struktur)
         }
         //delete logo himpunan when exist
         if (himpunan.logo_himpunan) {
             //delete old images
             cloudinary.uploader.destroy(himpunan.logo_himpunan.public_id)
                 .then(result => console.log(result))
-            // const oldPathLogoHimpunan = path.join(__dirname, '../../', himpunan.logo_himpunan)
-            // fs.unlink(oldPathLogoHimpunan, (err) => console.log(err))
+            //removeImage(himpunan.logo_himpunan)
         }
 
         await Himpunan.deleteOne({ _id: id })
