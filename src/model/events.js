@@ -6,7 +6,7 @@ const eventSchema = new mongoose.Schema({
     tanggal_selesai_event: Date,
     status_event: {
         type: String,
-        enum: ['Up Coming', 'On Going', 'Done']
+        enum: ['Upcoming', 'On Going', 'Done']
     },
     kategori_event: {
         type: String,
