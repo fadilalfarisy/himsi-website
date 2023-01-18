@@ -13,6 +13,7 @@ const createEvent = async (req, res, next) => {
         isi_event,
         penulis_event,
         link_pdf,
+        link_pendaftaran,
         id_divisi
     } = req.body
 
@@ -77,6 +78,7 @@ const createEvent = async (req, res, next) => {
             isi_event,
             penulis_event,
             link_pdf,
+            link_pendaftaran,
             header_event: {
                 public_id: uploadHeaderEvent.public_id,
                 url: uploadHeaderEvent.secure_url
@@ -233,6 +235,7 @@ const getEvent = async (req, res, next) => {
                             isi_event: 1,
                             penulis_event: 1,
                             link_pdf: 1,
+                            link_pendaftaran: 1,
                             header_event: 1,
                             gambar_event: 1,
                             dokumentasi_event: 1,
@@ -301,6 +304,7 @@ const getEventById = async (req, res, next) => {
                     isi_event: 1,
                     penulis_event: 1,
                     link_pdf: 1,
+                    link_pendaftaran: 1,
                     header_event: 1,
                     gambar_event: 1,
                     dokumentasi_event: 1,
@@ -343,6 +347,7 @@ const editEvent = async (req, res, next) => {
         isi_event,
         penulis_event,
         link_pdf,
+        link_pendaftaran,
         id_divisi
     } = req.body
 
@@ -456,6 +461,7 @@ const editEvent = async (req, res, next) => {
                 isi_event,
                 penulis_event,
                 link_pdf,
+                link_pendaftaran,
                 header_event: {
                     public_id: public_id_header_event,
                     url: header_event
