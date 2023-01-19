@@ -19,7 +19,7 @@ const superAuth = (req, res, next) => {
                     message: 'failed',
                     info: 'forbidden'
                 });
-            } else if (decoded.role !== 'super admin') {
+            } else if (decoded.role !== 'Super Admin') {
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',

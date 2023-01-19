@@ -20,7 +20,7 @@ const register = async (req, res, next) => {
         });
 
         //default value role when admin register
-        let role = 'super admin'
+        let role = 'Super Admin'
         //create access token and refresh token
         const accessToken = createAccessToken(newAdmin._id, role);
         const refreshToken = createRefreshToken(newAdmin._id, role)
