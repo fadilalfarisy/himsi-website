@@ -29,6 +29,7 @@ const config = {
     API_KEY_MAILCHIMP: process.env.API_KEY_MAILCHIMP,
     ID_AUDIENCE: process.env.ID_AUDIENCE,
     PORT: process.env.PORT,
+    PREFIX_MAILCHIMP: process.env.PREFIX_MAILCHIMP,
     MONGO_URI: process.env.MONGO_URI
 }
 

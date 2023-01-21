@@ -23,8 +23,8 @@ const saveHimpunan = async (req, res, next) => {
         }
         //when gambar struktur is not updated
         if (!req.files.gambar_struktur) {
-            gambar_struktur = existingHimpunan.logo_himpunan.url
-            public_id_gambar_struktur = existingHimpunan.logo_himpunan.public_id
+            gambar_struktur = existingHimpunan.gambar_struktur.url
+            public_id_gambar_struktur = existingHimpunan.gambar_struktur.public_id
         }
         //when gambar struktur is not updated
         if (!req.files.logo_himpunan) {

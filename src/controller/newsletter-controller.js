@@ -2,11 +2,15 @@ import mailchimp from "@mailchimp/mailchimp_marketing";
 import md5 from 'md5'
 import config from '../config/config.js'
 
-const { API_KEY_MAILCHIMP, ID_AUDIENCE } = config
+const {
+    API_KEY_MAILCHIMP,
+    ID_AUDIENCE,
+    PREFIX_MAILCHIMP
+} = config
 
 mailchimp.setConfig({
     apiKey: API_KEY_MAILCHIMP,
-    server: 'us14',
+    server: PREFIX_MAILCHIMP,
 });
 
 async function initialConfig() {
