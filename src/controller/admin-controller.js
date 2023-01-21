@@ -208,10 +208,28 @@ const editAdmin = async (req, res, next) => {
         nama_admin,
         role
     } = req.body
+
+    let hashPassword = '';
+
     try {
-        //hash the admin password
-        const salt = await bcrypt.genSalt();
-        const hashPassword = await bcrypt.hash(password, salt);
+        const admin = await Admin.findOne({ _id: id })
+        //when id admin is not found
+        if (!admin) {
+            return res.status(400).json({
+                status: 400,
+                message: 'failed',
+                info: 'admin not found'
+            });
+        }
+
+        if (admin.password === password) {
+            hashPassword = admin.password
+        }
+        if (admin.password !== password) {
+            //hash the admin password
+            const salt = await bcrypt.genSalt();
+            hashPassword = await bcrypt.hash(password, salt);
+        }
 
         await Admin.updateOne({ _id: id }, {
             $set: {
